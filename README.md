@@ -23,7 +23,7 @@ our accompanying videos are now available on **YouTube** (click below images to 
 
 <div align="center">
     <a href="https://www.youtube.com/watch?v=pFMFIrxhGas&t" target="_blank">
-    <img src="doc/image/video_cover.png" width=60% /></a>
+    <img src="doc/image/video_cover.png" width=60% />
 </div>
 
 ## Codes
