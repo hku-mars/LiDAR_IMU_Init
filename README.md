@@ -7,6 +7,8 @@
 3. Support **multiple LiDAR types**: both mechanical spinning LiDAR (Hesai, Velodyne, Ouster) and solid-state LiDAR ( Livox Avia/Mid360)
 4. Seamlessly merged into **FAST-LIO2**, as a robust initialization module.
 
+**Contributors**:[Fangcheng Zhu 朱方程](https://github.com/zfc-zfc)， [Yunfan Ren 任云帆](https://github.com/RENyunfan)， [Wei Xu 徐威](https://github.com/XW-HKU)
+
 ### Pipeline
 
 <div align="center"><img src="doc/image/pipeline.png" width=100% /></div>
@@ -20,12 +22,9 @@ our related papers are now available on **arxiv**:  [Robust and Online LiDAR-ine
 our accompanying videos are now available on **YouTube** (click below images to open)
 
 <div align="center">
-    <a href="https://www.youtube.com/watch?v=pFMFIrxhGas&t=37s" target="_blank">
-    <img src="doc/image/video_cover.png" width=60% />
+    <a href="https://www.youtube.com/watch?v=pFMFIrxhGas&t" target="_blank">
+    <img src="doc/image/video_cover.png" width=60% /></a>
 </div>
-
-**Contributors**:
-[Fangcheng Zhu 朱方程](https://github.com/zfc-zfc)， [Yunfan Ren 任云帆](https://github.com/RENyunfan)， [Wei Xu 徐威](https://github.com/XW-HKU)
 
 ## Codes
 
