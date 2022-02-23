@@ -5,7 +5,7 @@
 1. A robust LiDAR odometry (**Fast LO**) modified from FAST-LIO2.
 2. Fast and robust **temporal offset and extrinsic parameter calibration** between LiDAR and IMU without any hardware setup.
 3. Support **multiple LiDAR types**: both mechanical spinning LiDAR (Hesai, Velodyne, Ouster) and solid-state LiDAR ( Livox Avia/Mid360)
-4. Seamlessly merged into **FAST-LIO2**, as a robust initialization module.
+4. Seamlessly merged into FAST-LIO2, as a robust initialization module.
 
 **Contributors**:[Fangcheng Zhu 朱方程](https://github.com/zfc-zfc)， [Yunfan Ren 任云帆](https://github.com/RENyunfan)， [Wei Xu 徐威](https://github.com/XW-HKU)
 
@@ -19,7 +19,7 @@ our related papers are now available on **arxiv**:  [Robust and Online LiDAR-ine
 
 ### Related video:
 
-our accompanying videos are now available on **YouTube** (click below images to open)
+our accompanying videos are now available on **YouTube** (click below images to open) and (Bilibili)[https://www.bilibili.com/video/BV173411j7ia?spm_id_from=333.999.0.0].
 
 <div align="center">
     <a href="https://www.youtube.com/watch?v=pFMFIrxhGas&t" target="_blank">
