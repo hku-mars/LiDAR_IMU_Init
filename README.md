@@ -25,7 +25,8 @@ our accompanying videos are now available on **YouTube** (click below images to 
 </div>
 
 
-**Contributors**:   [Fangcheng Zhu 朱方程](https://github.com/zfc-zfc)， [Yunfan Ren 任云帆](https://github.com/RENyunfan)， [Wei Xu 徐威](https://github.com/XW-HKU)
+**Contributors**:
+[Fangcheng Zhu 朱方程](https://github.com/zfc-zfc)， [Yunfan Ren 任云帆](https://github.com/RENyunfan)， [Wei Xu 徐威](https://github.com/XW-HKU)
 
 ## Codes
 
