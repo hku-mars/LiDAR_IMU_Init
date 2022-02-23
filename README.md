@@ -20,10 +20,9 @@ our related papers are now available on **arxiv**:  [Robust and Online LiDAR-ine
 our accompanying videos are now available on **YouTube** (click below images to open)
 
 <div align="center">
-    <a href="https://www.youtube.com/watch?v=svWVNurbX64" target="_blank">
+    <a href="https://www.youtube.com/watch?v=pFMFIrxhGas&t=37s" target="_blank">
     <img src="doc/image/video_cover.png" width=60% />
 </div>
-
 
 **Contributors**:
 [Fangcheng Zhu 朱方程](https://github.com/zfc-zfc)， [Yunfan Ren 任云帆](https://github.com/RENyunfan)， [Wei Xu 徐威](https://github.com/XW-HKU)
