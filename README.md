@@ -19,7 +19,7 @@ our related papers are now available on **arxiv**:  [Robust and Online LiDAR-ine
 
 ### Related video:
 
-our accompanying videos are now available on **YouTube** (click below images to open) and (Bilibili)[https://www.bilibili.com/video/BV173411j7ia?spm_id_from=333.999.0.0].
+our accompanying videos are now available on **YouTube** (click below images to open) and [Bilibili](https://www.bilibili.com/video/BV173411j7ia?spm_id_from=333.999.0.0).
 
 <div align="center">
     <a href="https://www.youtube.com/watch?v=pFMFIrxhGas&t" target="_blank">
