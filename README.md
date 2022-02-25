@@ -28,7 +28,8 @@ our accompanying videos are now available on **YouTube** (click below images to 
 
 ## Codes & Datasets
 
-Coming soon......
+Our code and test datasets would be released once our paper get accepted.
+Thanks for your patience.
 
 ## Acknowledgments
 Thanks for [HKU MaRS Lab](https://github.com/hku-mars),  [Fast-LIO2](https://github.com/hku-mars/FAST_LIO) (Fast Direct LiDAR-inertial Odometry) and [ikd-tree](https://github.com/hku-mars/ikd-Tree).
