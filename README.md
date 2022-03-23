@@ -7,6 +7,7 @@
 3. Support **multiple LiDAR types**: both mechanical spinning LiDAR (Hesai, Velodyne, Ouster) and solid-state LiDAR ( Livox Avia/Mid360)
 4. Seamlessly merged into FAST-LIO2, as a robust initialization module.
 
+
 **Contributors**: [Fangcheng Zhu 朱方程](https://github.com/zfc-zfc)， [Yunfan Ren 任云帆](https://github.com/RENyunfan)， [Wei Xu 徐威](https://github.com/XW-HKU)， [Yixi Cai 蔡逸熙](https://github.com/Ecstasy-EC)
 
 ### Pipeline
@@ -16,6 +17,16 @@
 ### Related Paper
 
 our related papers are now available on **arxiv**:  [Robust and Online LiDAR-inertial Initialization](https://arxiv.org/abs/2202.11006)
+
+If our code is used in your project, please cite our paper following the bibtex below:
+```
+@article{zhu2022robust,
+  title={Robust and Online LiDAR-inertial Initialization},
+  author={Zhu, Fangcheng and Ren, Yunfan and Zhang, Fu},
+  journal={arXiv preprint arXiv:2202.11006},
+  year={2022}
+}
+```
 
 ### Related video:
 
