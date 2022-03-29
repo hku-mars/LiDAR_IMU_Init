@@ -1,18 +1,35 @@
 ## Robust and Online LiDAR-inertial Initialization
 
-**LiDAR-IMU Init** is a robust, online initialization method for LiDAR-inertial system. The proposed method calibrates the temporal offset and extrinsic parameter between LiDARs and IMUs, and also the gravity vector and IMU bias. Our method does not require any target or extra sensor, specific structured environment, prior environment point map or initial values of extrinsic and time offset. Our package address following key issues:
+**LI-Init** is a robust, online initialization method for LiDAR-inertial system. The proposed method calibrates the temporal offset and extrinsic parameter between LiDARs and IMUs, and also the gravity vector and IMU bias. Our method does not require any target or extra sensor, specific structured environment, prior environment point map or initial values of extrinsic and time offset. Our package address following key issues:
 
 1. A robust LiDAR odometry (**Fast LO**) modified from FAST-LIO2.
 2. Fast and robust **temporal offset and extrinsic parameter calibration** between LiDAR and IMU without any hardware setup.
 3. Support **multiple LiDAR types**: both mechanical spinning LiDAR (Hesai, Velodyne, Ouster) and solid-state LiDAR ( Livox Avia/Mid360)
 4. Seamlessly merged into FAST-LIO2, as a robust initialization module.
 
-
 **Contributors**: [Fangcheng Zhu 朱方程](https://github.com/zfc-zfc)， [Yunfan Ren 任云帆](https://github.com/RENyunfan)， [Wei Xu 徐威](https://github.com/XW-HKU)， [Yixi Cai 蔡逸熙](https://github.com/Ecstasy-EC)
+
+### Sensor Suite
+
+<div align="center"><img src="doc/image/device.png" width=70% /></div>
+
+
 
 ### Pipeline
 
 <div align="center"><img src="doc/image/pipeline.png" width=100% /></div>
+
+
+
+### Experiment Result
+
+<div align="center"><img src="doc/image/temporal calibration.png" width=100% /></div>
+
+
+
+<div align="center"><img src="doc/image/Extrinsic calibration.png" width=100% /></div>
+
+
 
 ### Related Paper
 
@@ -34,8 +51,9 @@ our accompanying videos are now available on **YouTube** (click below images to 
 
 <div align="center">
     <a href="https://www.youtube.com/watch?v=WiHgcPpKwvU" target="_blank">
-    <img src="doc/image/video_cover.png" width=80% />
+    <img src="doc/image/video_cover.png" width=70% />
 </div>
+
 
 ## Codes & Datasets
 
