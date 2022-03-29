@@ -16,12 +16,12 @@
 
 ### Related Paper
 
-our related papers are now available on **arxiv**:  [Robust and Online LiDAR-inertial Initialization](https://arxiv.org/abs/2202.11006)
+our related papers are now available on **arxiv**:  [Robust Real-time LiDAR-inertial Initialization](https://arxiv.org/abs/2202.11006)
 
 If our code is used in your project, please cite our paper following the bibtex below:
 ```
 @article{zhu2022robust,
-  title={Robust and Online LiDAR-inertial Initialization},
+  title={Robust Real-time LiDAR-inertial Initialization},
   author={Zhu, Fangcheng and Ren, Yunfan and Zhang, Fu},
   journal={arXiv preprint arXiv:2202.11006},
   year={2022}
@@ -33,8 +33,8 @@ If our code is used in your project, please cite our paper following the bibtex 
 our accompanying videos are now available on **YouTube** (click below images to open) and [Bilibili](https://www.bilibili.com/video/BV173411j7ia?spm_id_from=333.999.0.0).
 
 <div align="center">
-    <a href="https://www.youtube.com/watch?v=pFMFIrxhGas&t" target="_blank">
-    <img src="doc/image/video_cover.png" width=60% />
+    <a href="https://www.youtube.com/watch?v=WiHgcPpKwvU" target="_blank">
+    <img src="doc/image/video_cover.png" width=80% />
 </div>
 
 ## Codes & Datasets
