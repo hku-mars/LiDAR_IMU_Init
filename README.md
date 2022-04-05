@@ -47,7 +47,7 @@ If our code is used in your project, please cite our paper following the bibtex 
 
 ### Related video:
 
-our accompanying videos are now available on **YouTube** (click below images to open) and [Bilibili](https://www.bilibili.com/video/BV173411j7ia?spm_id_from=333.999.0.0).
+our accompanying videos are now available on **YouTube** (click below images to open) and [Bilibili](https://www.bilibili.com/video/BV1ZS4y127mW?spm_id_from=333.337.search-card.all.click).
 
 <div align="center">
     <a href="https://www.youtube.com/watch?v=WiHgcPpKwvU" target="_blank">
