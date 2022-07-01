@@ -9,27 +9,13 @@
 
 **Contributors**: [Fangcheng Zhu 朱方程](https://github.com/zfc-zfc)， [Yunfan Ren 任云帆](https://github.com/RENyunfan)， [Wei Xu 徐威](https://github.com/XW-HKU)， [Yixi Cai 蔡逸熙](https://github.com/Ecstasy-EC)
 
-### Sensor Suite
-
-<div align="center"><img src="doc/image/device.png" width=70% /></div>
-
-
-
 ### Pipeline
 
-<div align="center"><img src="doc/image/pipeline.png" width=100% /></div>
+<div align="center"><img src="image/pipeline.png" width=100% /></div>
 
+### Excite the Sensors
 
-
-### Experiment Result
-
-<div align="center"><img src="doc/image/temporal calibration.png" width=100% /></div>
-
-
-
-<div align="center"><img src="doc/image/Extrinsic calibration.png" width=100% /></div>
-
-
+<div align="center"><img src="image/Excitation.gif" width=100% /></div>
 
 ### Related Paper
 
@@ -45,23 +31,114 @@ If our code is used in your project, please cite our paper following the bibtex 
 }
 ```
 
-### Related video:
+### Related Video:
 
 our accompanying videos are now available on **YouTube** (click below images to open) and [Bilibili](https://www.bilibili.com/video/BV1ZS4y127mW?spm_id_from=333.337.search-card.all.click).
 
 <div align="center">
     <a href="https://www.youtube.com/watch?v=WiHgcPpKwvU" target="_blank">
-    <img src="doc/image/video_cover.png" width=70% />
+    <img src="image/video_cover.png" width=70% />
 </div>
 
 
-## Codes & Datasets
 
-Our code and test datasets would be released once our paper get accepted.
-Thanks for your patience.
+## 1. Prerequisites
 
-## Acknowledgments
+### 1.1 **Ubuntu** and **ROS**
+
+Ubuntu >= 18.04.
+
+ROS    >= Melodic. [ROS Installation](http://wiki.ros.org/ROS/Installation)
+
+### 1.2. **PCL && Eigen**
+
+PCL    >= 1.8,   Follow [PCL Installation](http://www.pointclouds.org/downloads/linux.html).
+
+Eigen  >= 3.3.4, Follow [Eigen Installation](http://eigen.tuxfamily.org/index.php?title=Main_Page).
+
+### 1.3. **livox_ros_driver**
+
+Follow [livox_ros_driver Installation](https://github.com/Livox-SDK/livox_ros_driver).
+
+*Remarks:*
+
+- Since the **LI_Init** must support Livox serials LiDAR firstly, so the **livox_ros_driver** must be installed and **sourced** before run any LI_Init luanch file.
+- How to source? The easiest way is add the line `source $Livox_ros_driver_dir$/devel/setup.bash` to the end of file `~/.bashrc`, where `$Livox_ros_driver_dir$` is the directory of the livox_ros_driver workspace (should be the `ws_livox` directory if you completely followed the livox official document).
+
+###  **1.4. ceres-solver**
+
+Our code has been tested on [ceres-solver-2.0.0](http://ceres-solver.org/installation.html#linux). Please download ceres-solver  following the instructions.
+
+
+## 2. Build
+
+Clone the repository and catkin_make:
+
+```
+cd ~/catkin_ws/src
+git clone https://github.com/hku-mars/LiDAR_IMU_Init.git
+cd ..
+catkin_make
+source devel/setup.bash
+```
+
+## 3. Run Your Own Data
+
+**Please make sure the parameters in config/xxx.yaml are correct before running the project.**
+
+It is highly recommended to run LI-Init and record your own data simultaneously, because our algorithm is able to automatically detect the degree of excitation and instruct users how to give sufficient excitation (e.g. rotate or move along which direction).
+
+Theoretically livox_avia.launch supports mid-70, mid-40 LiDARs.
+
+### Important parameters
+
+Edit `config/xxx.yaml` to set the below parameters:
+
+* `lid_topic`:  Topic name of LiDAR pointcloud.
+* `imu_topic`:  Topic name of IMU measurements.
+
+* `cut_frame_num`: Split one frame into sub-frames, to improve the odom frequency. Must be positive integers.
+* `orig_odom_freq` (Hz): Original LiDAR input frequency. For most LiDARs, the input frequency is 10 Hz. It is recommended that cut_frame_num * orig_odom_freq = 30 for mechinical spinning LiDAR,  cut_frame_num * orig_odom_freq = 50 for livox LiDARs.
+* `mean_acc_norm` ($m/s^2$):  The acceleration norm when IMU is stationary. Usually, 9.805 for normal IMU, 1 for livox built-in IMU.
+* `data_accum_length`: A threshold to assess if the data is enough for initialization. Too small may lead to bad-quality results.
+* `online_refine_time` (second):  The time of extrinsic refinement with FAST-LIO2. About 15~30 seconds of refinement is recommended.
+* `filter_size_surf` (meter):  It is recommended that filter_size_surf = 0.05~0.15 for indoor scenes, filter_size_surf = 0.5 for outdoor scenes.
+* `filter_size_map` (meter): It is recommended that filter_size_map = 0.15~0.25 for indoor scenes, filter_size_map = 0.5 for outdoor scenes.
+
+
+
+After setting the correct topic name and parameters, you can directly run **LI-Init** with your own data..
+
+```
+cd catkin_ws
+source devel/setup.bash
+roslaunch lidar_imu_init roslaunch lidar_imu_init xxx.launch
+```
+
+After initialization and refinement finished, the result would be written into `catkin_ws/src/LiDAR_IMU_Init/result/Initialization_result.txt`
+
+## 4. Rosbag Example
+
+Download our test bags here: [Lidar IMU Initialization Datasets](https://connecthkuhk-my.sharepoint.com/:f:/g/personal/zhufc_connect_hku_hk/EgdJ_F763sVOnkUNBRv-op8BmNL7eZrxETu2zSEAoiRX4A?e=cbNiJI).
+
+Use `rosbag info xxx.bag` to get the correct topic name.
+
+**Please note**: if the tested IMU is Livox built-in IMU, *mean_acc_norm* should be 1. If the IMU is Pixhawk IMU, *mean_acc_norm* should be 9.805.
+
+Here are the pointcloud map constructed by our LiDAR odometry (FAST-LO).
+
+<div align="center"><img src="image/point_map.png" width=100% /></div>
+
+<div align="center"><img src="image/point_map1.png" width=100% /></div>
+
+## 5. Acknowledgments
+
 Thanks for [HKU MaRS Lab](https://github.com/hku-mars),  [Fast-LIO2](https://github.com/hku-mars/FAST_LIO) (Fast Direct LiDAR-inertial Odometry) and [ikd-tree](https://github.com/hku-mars/ikd-Tree).
 
 Thanks for [Livox Technology](https://www.livoxtech.com/) for equipment support.
 
+## 6. License
+
+The source code is released under [GPLv2](http://www.gnu.org/licenses/) license.
+
+We are still working on improving the performance and reliability of our codes. For any technical issues, please contact us via email [zhufc@connect.hku.hk](mailto:zhufc@connect.hku.hk). For commercial use, please contact Dr. Fu Zhang [fuzhang@hku.hk](mailto:fuzhang@hku.hk).
