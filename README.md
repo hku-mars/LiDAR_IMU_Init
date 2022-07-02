@@ -90,6 +90,8 @@ It is highly recommended to run LI-Init and record your own data simultaneously,
 
 Theoretically livox_avia.launch supports mid-70, mid-40 LiDARs.
 
+**Note:** The code of LI-Init contains the initialization module and sequential FAST-LIO. If you run the code of LI-Init, it will first do initialization (if suffienct excitation is given, it will tell you the extrinsic transformation and temporal offset) and then it will switch into FAST-LIO. **Thus, if you want to run FAST-LIO on your own data but unfortunately the LiDAR and IMU are not synchronized or calibrated before, you can directly run LI-Init**. As for R3LIVE, you can write the extrinsic and temporal offset between LiDAR and IMU obtained by LI-Init into the config file of R3LIVE.
+
 ### Important parameters
 
 Edit `config/xxx.yaml` to set the below parameters:
