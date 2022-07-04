@@ -59,7 +59,7 @@ void Preprocess::process_cut_frame_livox(const livox_ros_driver::CustomMsg::Cons
 
     for (uint i = 1; i < plsize; i++) {
         if ((msg->points[i].line < N_SCANS) && ((msg->points[i].tag & 0x30) == 0x10) ||
-            ((msg->points[i].tag & 0x30) == 0x00)) //保留第0个回波
+            ((msg->points[i].tag & 0x30) == 0x00))
         {
             valid_point_num++;
             if (valid_point_num % point_filter_num == 0) {
@@ -81,10 +81,8 @@ void Preprocess::process_cut_frame_livox(const livox_ros_driver::CustomMsg::Cons
             }
         }
     }
-    //对点云按时间进行排序
     sort(pl_surf.points.begin(), pl_surf.points.end(), time_list_cut_frame);
-
-    //分割的上一帧的帧末时间，单位ms
+    //end time of last frame，单位ms
     double last_frame_end_time = msg->header.stamp.toSec() * 1000;
     uint valid_num = 0;
     uint cut_num = 0;
@@ -94,28 +92,20 @@ void Preprocess::process_cut_frame_livox(const livox_ros_driver::CustomMsg::Cons
     if (scan_count < 5)
         required_cut_num = 1;
 
-
-    //暂时存储分割后的帧，存入pcl_temp后清空
     PointCloudXYZI pcl_cut;
-    //分帧
     for (uint i = 1; i < valid_pcl_size; i++) {
         valid_num++;
-        //计算新的偏移时间（相对于切割后的帧头）：单位ms
+        //Compute new opffset time of each point：ms
         pl_surf[i].curvature += msg->header.stamp.toSec() * 1000 - last_frame_end_time;
         pcl_cut.push_back(pl_surf[i]);
-
         if (valid_num == (int((cut_num + 1) * valid_pcl_size / required_cut_num) - 1)) {
             cut_num++;
             time_lidar.push_back(last_frame_end_time);
-
-            //pcl_temp用于临时存储pcl_cut的值
-            PointCloudXYZI::Ptr pcl_temp(new PointCloudXYZI()); //shared_ptr一定要初始化
+            PointCloudXYZI::Ptr pcl_temp(new PointCloudXYZI()); //Initialize shared_ptr
             *pcl_temp = pcl_cut;
-
             pcl_out.push_back(pcl_temp);
-            //更新帧头（上一帧帧末时间）
+            //Update frame head
             last_frame_end_time += pl_surf[i].curvature;
-            //清空pcl_cut，准备存储下一帧
             pcl_cut.clear();
             pcl_cut.reserve(valid_pcl_size * 2 / required_frame_num);
         }
@@ -214,7 +204,7 @@ Preprocess::process_cut_frame_pcl2(const sensor_msgs::PointCloud2::ConstPtr &msg
         if (valid_num == (int((cut_num + 1) * valid_pcl_size / required_cut_num) - 1)) {
             cut_num++;
             time_lidar.push_back(last_frame_end_time);
-            PointCloudXYZI::Ptr pcl_temp(new PointCloudXYZI()); //shared_ptr一定要初始化
+            PointCloudXYZI::Ptr pcl_temp(new PointCloudXYZI());
             *pcl_temp = pcl_cut;
             pcl_out.push_back(pcl_temp);
             last_frame_end_time += pl_surf[i].curvature;
@@ -229,12 +219,9 @@ void Preprocess::process(const sensor_msgs::PointCloud2::ConstPtr &msg, PointClo
         case OUSTER:
             oust_handler(msg);
             break;
-
         case VELO:
             velodyne_handler(msg);
-//    velodyne_handler_kitti(msg);
             break;
-
         case L515:
             l515_handler(msg);
             break;

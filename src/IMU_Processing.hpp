@@ -83,7 +83,7 @@ class ImuProcess
   V3D angvel_last;
   V3D acc_s_last;
   double last_lidar_end_time_;
-  double time_last_scan;      //上一帧开头的时间戳
+  double time_last_scan;
   int    init_iter_num = 1;
   bool   b_first_frame_ = true;
   bool   imu_need_init_ = true;
@@ -175,7 +175,6 @@ void ImuProcess::IMU_init(const MeasureGroup &meas, StatesGroup &state_inout, in
     mean_acc << imu_acc.x, imu_acc.y, imu_acc.z;
     mean_gyr << gyr_acc.x, gyr_acc.y, gyr_acc.z;
     first_lidar_time = meas.lidar_beg_time;
-    // cout<<"init acc norm: "<<mean_acc.norm()<<endl;
   }
 
   for (const auto &imu : meas.imu)
@@ -224,28 +223,27 @@ void ImuProcess::Forward_propagation_without_imu(const MeasureGroup &meas, State
     /* covariance propagation */
     F_x.setIdentity();
     cov_w.setZero();
-      /** 匀角速度 **/
-    M3D Exp_f = Exp(state_inout.bias_g, dt); //用bias_g代表全程不变的角速度
+    /** In CV model, bias_g represents angular velocity **/
+    /** In CV model，bias_a represents linear acceleration **/
+    M3D Exp_f = Exp(state_inout.bias_g, dt);
     F_x.block<3, 3>(0, 0) = Exp(state_inout.bias_g, -dt);
     F_x.block<3, 3>(0, 15) = Eye3d * dt;
     F_x.block<3, 3>(3, 12) = Eye3d * dt;
 
-    // for omega in constant model(匀角速度)
-    cov_w.block<3, 3>(15, 15).diagonal() = cov_gyr_scale * dt * dt; //角速度方差
 
-    /** 匀速模型，且加速度为一个状态bias_a **/
-    cov_w.block<3, 3>(12, 12).diagonal() = cov_acc_scale * dt * dt; //速度方差
+    cov_w.block<3, 3>(15, 15).diagonal() = cov_gyr_scale * dt * dt;
+    cov_w.block<3, 3>(12, 12).diagonal() = cov_acc_scale * dt * dt;
 
     /** Forward propagation of covariance**/
     state_inout.cov = F_x * state_inout.cov * F_x.transpose() + cov_w;
 
-    //Forward propagation of attitude
+    /** Forward propagation of attitude **/
     state_inout.rot_end = state_inout.rot_end * Exp_f;
 
-    /** 匀速模型，位置传播 **/
+    /** Position Propagation **/
     state_inout.pos_end += state_inout.vel_end * dt;
 
-    /**匀速模型： un-distort pcl using linear interpolation **/
+    /**CV model： un-distort pcl using linear interpolation **/
     if(lidar_type != L515){
         auto it_pcl = pcl_out.points.end() - 1;
         double dt_j = 0.0;
@@ -271,7 +269,7 @@ void ImuProcess::Forward_propagation_without_imu(const MeasureGroup &meas, State
 void ImuProcess::propagation_and_undist(const MeasureGroup &meas, StatesGroup &state_inout, PointCloudXYZI &pcl_out)
 {
   /*** add the imu of the last frame-tail to the current frame-head ***/
-  pcl_out = *(meas.lidar);//有畸变的一帧点云
+  pcl_out = *(meas.lidar);
   auto v_imu = meas.imu;
   v_imu.push_front(last_imu_);
   double imu_end_time = v_imu.back()->header.stamp.toSec();
@@ -397,10 +395,9 @@ void ImuProcess::propagation_and_undist(const MeasureGroup &meas, StatesGroup &s
     auto it_pcl = pcl_out.points.end() - 1; //a single point in k-th frame
     for (auto it_kp = IMUpose.end() - 1; it_kp != IMUpose.begin(); it_kp--)
     {
-      auto head = it_kp - 1;//t_i时刻的IMU值，满足t_i<t_j
-      R_imu<<MAT_FROM_ARRAY(head->rot);//
+      auto head = it_kp - 1;
+      R_imu<<MAT_FROM_ARRAY(head->rot);
       acc_imu<<VEC_FROM_ARRAY(head->acc);
-      // cout<<"head imu acc: "<<acc_imu.transpose()<<endl;
       vel_imu<<VEC_FROM_ARRAY(head->vel);
       pos_imu<<VEC_FROM_ARRAY(head->pos);
       angvel_avr<<VEC_FROM_ARRAY(head->gyr);
@@ -413,8 +410,8 @@ void ImuProcess::propagation_and_undist(const MeasureGroup &meas, StatesGroup &s
         * Note: Compensation direction is INVERSE of Frame's moving direction
         * So if we want to compensate a point at timestamp-i to the frame-e
         * P_compensate = R_imu_e ^ T * (R_i * P_i + T_ei) where T_ei is represented in global frame */
-        //R_i是t_j时刻IMU系相对于世界坐标系的旋转
-        M3D R_i(R_imu * Exp(angvel_avr, dt)); //t_j>t_i，故往前传播，与FastLIO1公式（9）不同
+
+        M3D R_i(R_imu * Exp(angvel_avr, dt));
         V3D T_ei(pos_imu + vel_imu * dt + 0.5 * acc_imu * dt * dt + R_i * state_inout.offset_T_L_I - pos_liD_e);
 
         V3D P_i(it_pcl->x, it_pcl->y, it_pcl->z);
@@ -455,8 +452,6 @@ void ImuProcess::Process(const MeasureGroup &meas, StatesGroup &stat, PointCloud
                 cov_acc = cov_acc_scale;
                 cov_gyr = cov_gyr_scale;
 
-//                ROS_INFO("IMU Initialization Done: Gravity: %.4f %.4f %.4f %.4f; state.bias_g: %.4f %.4f %.4f; acc covariance: %.8f %.8f %.8f; gry covariance: %.8f %.8f %.8f",\
-//                stat.gravity[0], stat.gravity[1], stat.gravity[2], mean_acc.norm(), cov_bias_gyr[0], cov_bias_gyr[1], cov_bias_gyr[2], cov_acc[0], cov_acc[1], cov_acc[2], cov_gyr[0], cov_gyr[1], cov_gyr[2]);
                 ROS_INFO("IMU Initialization Done: Gravity: %.4f %.4f %.4f, Acc norm: %.4f", stat.gravity[0], stat.gravity[1], stat.gravity[2], mean_acc.norm());
                 IMU_mean_acc_norm = mean_acc.norm();
             }
@@ -473,7 +468,7 @@ void ImuProcess::Process(const MeasureGroup &meas, StatesGroup &stat, PointCloud
     }
     propagation_and_undist(meas, stat, *cur_pcl_un_);
   }
-  else //无IMU时，匀速运动模型做forward propagation；用匀速模型做畸变去除
+  else
   {
      Forward_propagation_without_imu(meas, stat, *cur_pcl_un_);
   }
