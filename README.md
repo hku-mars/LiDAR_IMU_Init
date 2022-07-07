@@ -83,6 +83,13 @@ root@taeyoung-cilab:/home/catkin_ws#
 
 These docker tutorial is tested on ubuntu 18.04 and may not be applied to arm platforms such as NVIDIA Jetson. In addition, this docker tutorial was used to execute the LI-Init with a bagfile, and if the actual sensor is used, it needs to be modified to create a docker container.  
 
+## Original README.md
+
+<details>
+<summary> LiDAR_IMU_Init </summary>
+<div markdown="1">
+
+
 ### Pipeline
 
 <div align="center"><img src="image/pipeline.png" width=100% /></div>
@@ -218,3 +225,7 @@ Thanks for [Livox Technology](https://www.livoxtech.com/) for equipment support.
 The source code is released under [GPLv2](http://www.gnu.org/licenses/) license.
 
 We are still working on improving the performance and reliability of our codes. For any technical issues, please contact us via email [zhufc@connect.hku.hk](mailto:zhufc@connect.hku.hk). For commercial use, please contact Dr. Fu Zhang [fuzhang@hku.hk](mailto:fuzhang@hku.hk).
+
+</div>
+</details>
+
