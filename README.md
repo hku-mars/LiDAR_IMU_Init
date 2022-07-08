@@ -81,6 +81,20 @@ If you have successfully created the docker container, the terminal output will 
 root@taeyoung-cilab:/home/catkin_ws#
 ```  
 
+### Launch LI-Init ROS package  
+
+In your docker container, follow the commands.  
+
+```
+catkin_make
+source devel/setup.bash
+roslaunch lidar_imu_init xxx.launch
+```
+
+After initialization and refinement finished, the result would be written into `catkin_ws/src/LiDAR_IMU_Init/result/Initialization_result.txt`
+
+---
+
 These docker tutorial is tested on ubuntu 18.04 and may not be applied to arm platforms such as NVIDIA Jetson. In addition, this docker tutorial was used to execute the LI-Init with a bagfile, and if the actual sensor is used, it needs to be modified to create a docker container.  
 
 ## Original README.md
