@@ -138,6 +138,9 @@ V3D last_odom(Zero3d);
 MeasureGroup Measures;
 StatesGroup state;
 
+PointCloudXYZI::Ptr pcl_wait_save(new PointCloudXYZI());
+pcl::PCDWriter pcd_writer;
+string all_points_dir;
 
 nav_msgs::Path path;
 nav_msgs::Odometry odomAftMapped;
@@ -180,6 +183,10 @@ void calcBodyVar(Eigen::Vector3d &pb, const float range_inc,
 }
 
 void SigHandle(int sig) {
+    if (pcd_save_en && pcd_save_interval < 0){
+        all_points_dir = string(root_dir + "/PCD/PCD_all" + string(".pcd"));
+        pcd_writer.writeBinary(all_points_dir, *pcl_wait_save);
+    }
     flg_exit = true;
     ROS_WARN("catch sig %d", sig);
     sig_buffer.notify_all();
@@ -560,9 +567,6 @@ void map_incremental() {
     kdtree_incremental_time = omp_get_wtime() - st_time;
 }
 
-PointCloudXYZI::Ptr pcl_wait_pub(new PointCloudXYZI(500000, 1));
-PointCloudXYZI::Ptr pcl_wait_save(new PointCloudXYZI());
-
 void publish_frame_world(const ros::Publisher &pubLaserCloudFullRes) {
     if (scan_pub_en) {
         PointCloudXYZI::Ptr laserCloudFullRes(dense_pub_en ? feats_undistort : feats_down_body);
@@ -597,6 +601,7 @@ void publish_frame_world(const ros::Publisher &pubLaserCloudFullRes) {
     /* 1. make sure you have enough memories
        2. noted that pcd save will influence the real-time performences **/
     if (pcd_save_en) {
+        boost::filesystem::create_directories(root_dir + "/PCD");
         int size = feats_undistort->points.size();
         PointCloudXYZI::Ptr laserCloudWorld(new PointCloudXYZI(size, 1));
         for (int i = 0; i < size; i++) {
@@ -604,13 +609,11 @@ void publish_frame_world(const ros::Publisher &pubLaserCloudFullRes) {
         }
 
         *pcl_wait_save += *laserCloudWorld;
-
         static int scan_wait_num = 0;
         scan_wait_num++;
         if (pcl_wait_save->size() > 0 && pcd_save_interval > 0 && scan_wait_num >= pcd_save_interval) {
             pcd_index++;
-            string all_points_dir(string(root_dir + "PCD/") + to_string(pcd_index) + string(".pcd"));
-            pcl::PCDWriter pcd_writer;
+            all_points_dir = string(root_dir + "/PCD/PCD") + to_string(pcd_index) + string(".pcd");
             cout << "current scan saved to " << all_points_dir << endl;
             pcd_writer.writeBinary(all_points_dir, *pcl_wait_save);
             pcl_wait_save->clear();
