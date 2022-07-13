@@ -114,7 +114,7 @@ After setting the correct topic name and parameters, you can directly run **LI-I
 ```
 cd catkin_ws
 source devel/setup.bash
-roslaunch lidar_imu_init roslaunch lidar_imu_init xxx.launch
+roslaunch lidar_imu_init xxx.launch
 ```
 
 After initialization and refinement finished, the result would be written into `catkin_ws/src/LiDAR_IMU_Init/result/Initialization_result.txt`
