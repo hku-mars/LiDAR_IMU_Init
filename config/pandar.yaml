@@ -18,7 +18,6 @@ initialization:
     Trans_LI_cov: [ 0.00001, 0.00001, 0.00000001 ]
 
 mapping:
-    imu_en: false
     filter_size_surf: 0.1
     filter_size_map: 0.2
     gyr_cov: 50

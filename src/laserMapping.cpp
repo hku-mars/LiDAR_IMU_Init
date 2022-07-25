@@ -86,11 +86,11 @@ double match_time = 0, solve_time = 0, solve_const_H_time = 0;
 
 int lidar_type, pcd_save_interval = -1, pcd_index = 0;
 bool lidar_pushed, flg_reset, flg_exit = false, flg_EKF_inited = true;
-bool imu_en = true;
+bool imu_en = false;
 bool scan_pub_en = false, dense_pub_en = false, scan_body_pub_en = false;
 bool runtime_pos_log = false, pcd_save_en = false, extrinsic_est_en = true, path_en = true;
 
-// LI Calib Parameters
+// LI-Init Parameters
 bool cut_frame = true, data_accum_finished = false, data_accum_start = false, online_calib_finish = false, refine_print = false;
 int cut_frame_num = 1, orig_odom_freq = 10, frame_num = 0;
 double time_lag_IMU_wtr_lidar = 0.0, move_start_time = 0.0, online_calib_starts_time = 0.0, mean_acc_norm = 9.81;
@@ -782,7 +782,6 @@ int main(int argc, char **argv) {
     nh.param<double>("mapping/filter_size_map", filter_size_map_min, 0.5);
     nh.param<double>("cube_side_length", cube_len, 200);
     nh.param<float>("mapping/det_range", DET_RANGE, 300.f);
-    nh.param<bool>("mapping/imu_en", imu_en, true);
     nh.param<double>("mapping/gyr_cov", gyr_cov, 0.1);
     nh.param<double>("mapping/acc_cov", acc_cov, 0.1);
     nh.param<double>("mapping/grav_cov", grav_cov, 0.001);
