@@ -9,101 +9,6 @@
 
 **Contributors**: [Fangcheng Zhu 朱方程](https://github.com/zfc-zfc)， [Yunfan Ren 任云帆](https://github.com/RENyunfan)， [Wei Xu 徐威](https://github.com/XW-HKU)， [Yixi Cai 蔡逸熙](https://github.com/Ecstasy-EC)
 
-## How to start LI-Init with Docker  
-
-In `docker/` folder, there are some files related to Docker.  
-
-I tested this Dockerfile with Ubuntu 18.04, CUDA 11.2, NVIDIA Titan XP.  
-**If you are CUDA version is lower than 11.2, you should change the base image in Dockerfile.**  
-
-### Make LI-Init Docker image
-
-Move the terminal path to `/docker` and execute the following command.  
-
-```
-docker build -t li_init:1.0 .
-```
-
-After the image is created, you can execute `docker images` command to view the following results from the terminal.
-
-```
-REPOSITORY                  TAG                    IMAGE ID       CREATED             SIZE
-li_init                     1.0                    ece4f57ca14b   48 minutes ago      7.94GB
-```
-
-### Make LI-Init Docker container  
-
-When you create a docker container, you need several options to use the GUI and share folders.  
-
-First, you should enter the command below in the local terminal to enable docker to communicate with Xserver on the host.  
-
-```
-xhost +local:docker
-```
-
-After that, make your own container with the command below.  
-
-```
-nvidia-docker run --privileged -it \
-           -e NVIDIA_DRIVER_CAPABILITIES=all \
-           -e NVIDIA_VISIBLE_DEVICES=all \
-           --volume=${LiDAR_IMU_Init_repo_root}:/home/catkin_ws/src \
-           --volume=/tmp/.X11-unix:/tmp/.X11-unix:rw \
-           --net=host \
-           --ipc=host \
-           --shm-size=1gb \
-           --name=${docker container name} \
-           --env="DISPLAY=$DISPLAY" \
-           ${docker image} /bin/bash
-```   
-
-⚠️ **You should change {LiDAR_IMU_Init_repo_root}, {docker container name}, {docker image} to suit your environment.**  
-
-For example,  
-```
-nvidia-docker run --privileged -it \
-           -e NVIDIA_DRIVER_CAPABILITIES=all \
-           -e NVIDIA_VISIBLE_DEVICES=all \
-           --volume=/home/taeyoung/Desktop/LiDAR_IMU_Init:/home/catkin_ws/src \
-           --volume=/tmp/.X11-unix:/tmp/.X11-unix:rw \
-           --net=host \
-           --ipc=host \
-           --shm-size=1gb \
-           --name=li_init \
-           --env="DISPLAY=$DISPLAY" \
-           li_init:1.0 /bin/bash
-```
-
-If you have successfully created the docker container, the terminal output will be similar to the below.  
-
-```
-================Docker Env Ready================
-root@taeyoung-cilab:/home/catkin_ws#
-```  
-
-### Launch LI-Init ROS package  
-
-In your docker container, follow the commands.  
-
-```
-catkin_make
-source devel/setup.bash
-roslaunch lidar_imu_init xxx.launch
-```
-
-After initialization and refinement finished, the result would be written into `catkin_ws/src/LiDAR_IMU_Init/result/Initialization_result.txt`
-
----
-
-These docker tutorial is tested on ubuntu 18.04 and may not be applied to arm platforms such as NVIDIA Jetson. In addition, this docker tutorial was used to execute the LI-Init with a bagfile, and if the actual sensor is used, it needs to be modified to create a docker container.  
-
-## Original README.md
-
-<details>
-<summary> LiDAR_IMU_Init </summary>
-<div markdown="1">
-
-
 ### Pipeline
 
 <div align="center"><img src="image/pipeline.png" width=100% /></div>
@@ -164,6 +69,10 @@ Follow [livox_ros_driver Installation](https://github.com/Livox-SDK/livox_ros_dr
 
 Our code has been tested on [ceres-solver-2.0.0](http://ceres-solver.org/installation.html#linux). Please download ceres-solver  following the instructions.
 
+### **1.5. Getting start with Docker**  
+
+When you use Docker, you could solve the prerequisites above at once.  
+For more information, you can check [docker_start.md](./docker/docker_start.md).  
 
 ## 2. Build
 
@@ -239,7 +148,3 @@ Thanks for [Livox Technology](https://www.livoxtech.com/) for equipment support.
 The source code is released under [GPLv2](http://www.gnu.org/licenses/) license.
 
 We are still working on improving the performance and reliability of our codes. For any technical issues, please contact us via email [zhufc@connect.hku.hk](mailto:zhufc@connect.hku.hk). For commercial use, please contact Dr. Fu Zhang [fuzhang@hku.hk](mailto:fuzhang@hku.hk).
-
-</div>
-</details>
-

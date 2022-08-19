@@ -1,15 +1,12 @@
 # Author: Tae Young Kim
 # email: tyoung96@yonsei.ac.kr
 
-FROM tyoung96/ros-melodic-cudagl11.2:latest
-
-RUN echo "\nexport XDG_RUNTIME_DIR=/usr/lib/" >> /etc/profile
-RUN echo "\nexport RUNLEVEL=3" >> /etc/profile
-SHELL ["/bin/bash", "-c"] 
-RUN source /etc/profile
+FROM ros:melodic
 
 # Install PCL & Eigen & essential libraries
-RUN apt-get update && apt-get install -y cmake libatlas-base-dev libeigen3-dev libpcl-dev libgoogle-glog-dev libsuitesparse-dev libglew-dev
+RUN apt-get update && apt-get install -y cmake libeigen3-dev libpcl-dev \
+    ros-melodic-rviz ros-melodic-pcl-ros ros-melodic-eigen-conversions \
+    libatlas-base-dev libgoogle-glog-dev libsuitesparse-dev libglew-dev wget
 
 # Install ceres-solver
 WORKDIR /home/
@@ -33,4 +30,3 @@ RUN chmod 755 /ros_entrypoint.sh
 ENTRYPOINT ["/ros_entrypoint.sh"]
 
 CMD ["bash"]
-
