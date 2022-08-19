@@ -3,7 +3,7 @@ common:
     imu_topic:  "/livox/imu"
 
 preprocess:
-    lidar_type: 1                # Livox Avia LiDAR
+    lidar_type: 1                # Livox series LiDAR
     feature_extract_en: false
     scan_line: 6
     blind: 1
@@ -18,7 +18,6 @@ initialization:
     Trans_LI_cov: [ 0.00001, 0.00001, 0.00001 ]
 
 mapping:
-    imu_en: false
     filter_size_surf: 0.05
     filter_size_map: 0.15
     gyr_cov: 50
@@ -31,7 +30,7 @@ publish:
     path_en:  true
     scan_publish_en:  true       # false: close all the point cloud output
     dense_publish_en: true       # false: low down the points number in a global-frame point clouds scan.
-    scan_bodyframe_pub_en: true  # true: output the point cloud scans in IMU-body-frame
+    scan_bodyframe_pub_en: false  # true: output the point cloud scans in IMU-body-frame
 
 pcd_save:
     pcd_save_en: false

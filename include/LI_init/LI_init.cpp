@@ -237,7 +237,6 @@ void LI_Init::cut_sequence_tail() {
         Lidar_state_group.pop_back();
 }
 
-
 void LI_Init::acc_interpolate() {
     //Interpolation to get acc_I(t_L)
     for (int i = 1; i < Lidar_state_group.size() - 1; i++) {
@@ -257,7 +256,6 @@ void LI_Init::acc_interpolate() {
         }
     }
 }
-
 
 void LI_Init::Butter_filt(const deque<CalibState> &signal_in, deque<CalibState> &signal_out) {
     LI_Init::Butterworth butter;
@@ -405,7 +403,6 @@ void LI_Init::solve_Rot_bias_gyro(double &timediff_imu_wrt_lidar) {
 
 }
 
-
 void LI_Init::solve_trans_biasacc_grav() {
     M3D Rot_Init = Eye3d;
     Rot_Init.diagonal() = V3D(1, 1, 1);
@@ -496,7 +493,6 @@ void LI_Init::solve_trans_biasacc_grav() {
     M3D EigenVec_mat_trans = es_trans.pseudoEigenvectors();
 
 }
-
 
 void LI_Init::normalize_acc(deque<CalibState> &signal_in) {
     V3D mean_acc(0, 0, 0);

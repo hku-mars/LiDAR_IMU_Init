@@ -58,8 +58,8 @@ void Preprocess::process_cut_frame_livox(const livox_ros_driver::CustomMsg::Cons
     int valid_point_num = 0;
 
     for (uint i = 1; i < plsize; i++) {
-        if ((msg->points[i].line < N_SCANS) && ((msg->points[i].tag & 0x30) == 0x10) ||
-            ((msg->points[i].tag & 0x30) == 0x00))
+        if ((msg->points[i].line < N_SCANS) &&
+        ((msg->points[i].tag & 0x30) == 0x10 || (msg->points[i].tag & 0x30) == 0x00))
         {
             valid_point_num++;
             if (valid_point_num % point_filter_num == 0) {
@@ -297,8 +297,8 @@ void Preprocess::avia_handler(const livox_ros_driver::CustomMsg::ConstPtr &msg) 
         printf("Feature extraction time: %lf \n", time / count);
     } else {
         for (uint i = 1; i < plsize; i++) {
-            if ((msg->points[i].line < N_SCANS) && ((msg->points[i].tag & 0x30) == 0x10) ||
-                ((msg->points[i].tag & 0x30) == 0x00)) {
+            if ((msg->points[i].line < N_SCANS) && ((msg->points[i].tag & 0x30) == 0x10 ||
+                (msg->points[i].tag & 0x30) == 0x00)) {
                 valid_num++;
                 if (valid_num % point_filter_num == 0) {
                     pl_full[i].x = msg->points[i].x;
@@ -320,7 +320,6 @@ void Preprocess::avia_handler(const livox_ros_driver::CustomMsg::ConstPtr &msg) 
                 }
             }
         }
-//    cout << "pl_surf size: " << pl_surf.size() <<endl;
     }
 }
 

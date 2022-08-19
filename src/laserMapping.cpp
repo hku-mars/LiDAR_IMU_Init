@@ -86,11 +86,11 @@ double match_time = 0, solve_time = 0, solve_const_H_time = 0;
 
 int lidar_type, pcd_save_interval = -1, pcd_index = 0;
 bool lidar_pushed, flg_reset, flg_exit = false, flg_EKF_inited = true;
-bool imu_en = true;
+bool imu_en = false;
 bool scan_pub_en = false, dense_pub_en = false, scan_body_pub_en = false;
 bool runtime_pos_log = false, pcd_save_en = false, extrinsic_est_en = true, path_en = true;
 
-// LI Calib Parameters
+// LI-Init Parameters
 bool cut_frame = true, data_accum_finished = false, data_accum_start = false, online_calib_finish = false, refine_print = false;
 int cut_frame_num = 1, orig_odom_freq = 10, frame_num = 0;
 double time_lag_IMU_wtr_lidar = 0.0, move_start_time = 0.0, online_calib_starts_time = 0.0, mean_acc_norm = 9.81;
@@ -138,6 +138,9 @@ V3D last_odom(Zero3d);
 MeasureGroup Measures;
 StatesGroup state;
 
+PointCloudXYZI::Ptr pcl_wait_save(new PointCloudXYZI());
+pcl::PCDWriter pcd_writer;
+string all_points_dir;
 
 nav_msgs::Path path;
 nav_msgs::Odometry odomAftMapped;
@@ -180,6 +183,10 @@ void calcBodyVar(Eigen::Vector3d &pb, const float range_inc,
 }
 
 void SigHandle(int sig) {
+    if (pcd_save_en && pcd_save_interval < 0){
+        all_points_dir = string(root_dir + "/PCD/PCD_all" + string(".pcd"));
+        pcd_writer.writeBinary(all_points_dir, *pcl_wait_save);
+    }
     flg_exit = true;
     ROS_WARN("catch sig %d", sig);
     sig_buffer.notify_all();
@@ -560,9 +567,6 @@ void map_incremental() {
     kdtree_incremental_time = omp_get_wtime() - st_time;
 }
 
-PointCloudXYZI::Ptr pcl_wait_pub(new PointCloudXYZI(500000, 1));
-PointCloudXYZI::Ptr pcl_wait_save(new PointCloudXYZI());
-
 void publish_frame_world(const ros::Publisher &pubLaserCloudFullRes) {
     if (scan_pub_en) {
         PointCloudXYZI::Ptr laserCloudFullRes(dense_pub_en ? feats_undistort : feats_down_body);
@@ -597,6 +601,7 @@ void publish_frame_world(const ros::Publisher &pubLaserCloudFullRes) {
     /* 1. make sure you have enough memories
        2. noted that pcd save will influence the real-time performences **/
     if (pcd_save_en) {
+        boost::filesystem::create_directories(root_dir + "/PCD");
         int size = feats_undistort->points.size();
         PointCloudXYZI::Ptr laserCloudWorld(new PointCloudXYZI(size, 1));
         for (int i = 0; i < size; i++) {
@@ -604,13 +609,11 @@ void publish_frame_world(const ros::Publisher &pubLaserCloudFullRes) {
         }
 
         *pcl_wait_save += *laserCloudWorld;
-
         static int scan_wait_num = 0;
         scan_wait_num++;
         if (pcl_wait_save->size() > 0 && pcd_save_interval > 0 && scan_wait_num >= pcd_save_interval) {
             pcd_index++;
-            string all_points_dir(string(root_dir + "PCD/") + to_string(pcd_index) + string(".pcd"));
-            pcl::PCDWriter pcd_writer;
+            all_points_dir = string(root_dir + "/PCD/PCD") + to_string(pcd_index) + string(".pcd");
             cout << "current scan saved to " << all_points_dir << endl;
             pcd_writer.writeBinary(all_points_dir, *pcl_wait_save);
             pcl_wait_save->clear();
@@ -779,7 +782,6 @@ int main(int argc, char **argv) {
     nh.param<double>("mapping/filter_size_map", filter_size_map_min, 0.5);
     nh.param<double>("cube_side_length", cube_len, 200);
     nh.param<float>("mapping/det_range", DET_RANGE, 300.f);
-    nh.param<bool>("mapping/imu_en", imu_en, true);
     nh.param<double>("mapping/gyr_cov", gyr_cov, 0.1);
     nh.param<double>("mapping/acc_cov", acc_cov, 0.1);
     nh.param<double>("mapping/grav_cov", grav_cov, 0.001);

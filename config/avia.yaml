@@ -4,7 +4,7 @@ common:
     imu_topic:  "/mavros/imu/data_raw"
 
 preprocess:
-    lidar_type: 1                # Livox Avia LiDAR
+    lidar_type: 1               # Livox series LiDAR
     feature_extract_en: false
     scan_line: 6
     blind: 2
@@ -19,7 +19,6 @@ initialization:
     Trans_LI_cov: [ 0.00001, 0.00001, 0.00001 ]
 
 mapping:
-    imu_en: false
     filter_size_surf: 0.05
     filter_size_map: 0.15
     gyr_cov: 50
