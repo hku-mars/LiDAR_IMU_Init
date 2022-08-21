@@ -69,6 +69,10 @@ Follow [livox_ros_driver Installation](https://github.com/Livox-SDK/livox_ros_dr
 
 Our code has been tested on [ceres-solver-2.0.0](http://ceres-solver.org/installation.html#linux). Please download ceres-solver  following the instructions.
 
+### **1.5. Getting start with Docker**  
+
+When you use Docker, you could solve the prerequisites above at once.  
+For more information, you can check [docker_start.md](./docker/docker_start.md).  
 
 ## 2. Build
 
