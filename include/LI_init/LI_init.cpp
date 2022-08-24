@@ -380,8 +380,6 @@ void LI_Init::solve_Rot_bias_gyro(double &timediff_imu_wrt_lidar) {
     ceres::Solver::Summary summary_quat;
     ceres::Solve(options_quat, &problem_ang_vel, &summary_quat);
 
-
-
     Eigen::Quaterniond q_LI(R_LI_quat[0], R_LI_quat[1], R_LI_quat[2], R_LI_quat[3]);
     Rot_Lidar_wrt_IMU = q_LI.matrix();
     V3D euler_angle = RotMtoEuler(q_LI.matrix());
@@ -605,14 +603,10 @@ void LI_Init::LI_Initialization(int &orig_odom_freq, int &cut_frame_num, double 
     set_Lidar_state(Lidar_after_zero_phase);
     cut_sequence_tail();
 
-
-
     xcorr_temporal_init(orig_odom_freq * cut_frame_num);
     IMU_time_compensate(get_lag_time_1(), false);
 
-
     central_diff();
-
 
     deque<CalibState> IMU_after_2nd_zero_phase;
     deque<CalibState> Lidar_after_2nd_zero_phase;

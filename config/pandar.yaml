@@ -11,16 +11,16 @@ preprocess:
 initialization:
     cut_frame_num: 3 # must be positive integer
     orig_odom_freq: 10
-    mean_acc_norm: 9.8
+    mean_acc_norm: 9.805
     online_refine_time: 15.0
-    data_accum_length: 200
+    data_accum_length: 500
     Rot_LI_cov: [ 0.00005, 0.00005, 0.00005 ]
     Trans_LI_cov: [ 0.00001, 0.00001, 0.00000001 ]
 
 mapping:
-    filter_size_surf: 0.1
-    filter_size_map: 0.2
-    gyr_cov: 50
+    filter_size_surf: 0.05
+    filter_size_map: 0.15
+    gyr_cov: 20
     acc_cov: 2
     b_acc_cov: 0.0001
     b_gyr_cov: 0.0001

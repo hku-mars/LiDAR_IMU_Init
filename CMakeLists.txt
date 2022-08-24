@@ -87,14 +87,14 @@ catkin_package(
   INCLUDE_DIRS
 )
 
-add_executable(fastlio_mapping
+add_executable(li_init
         src/laserMapping.cpp
         include/ikd-Tree/ikd_Tree.cpp
         include/LI_init/LI_init.cpp
         src/preprocess.cpp)
 
-target_link_libraries(fastlio_mapping ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PYTHON_LIBRARIES} ${CERES_LIBRARIES})
-target_include_directories(fastlio_mapping PRIVATE ${PYTHON_INCLUDE_DIRS})
+target_link_libraries(li_init ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${PYTHON_LIBRARIES} ${CERES_LIBRARIES})
+target_include_directories(li_init PRIVATE ${PYTHON_INCLUDE_DIRS})
 
 
 
