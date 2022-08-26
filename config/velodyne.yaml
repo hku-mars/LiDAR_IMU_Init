@@ -1,6 +1,6 @@
 common:
-    lid_topic:  "/points_raw"
-    imu_topic:  "/imu_correct"
+    lid_topic:  "/velodyne_points"
+    imu_topic:  "/dvs/imu"
 
 preprocess:
     lidar_type: 2                # Velodyne LiDAR
@@ -10,7 +10,7 @@ preprocess:
 
 initialization:
     cut_frame: true # false: do not cut input pointcloud
-    cut_frame_num: 5 # must be positive integer
+    cut_frame_num: 3 # must be positive integer
     orig_odom_freq: 10
     mean_acc_norm: 9.81 # 1: for livox built-in IMU
     online_refine_time: 15.0
@@ -19,10 +19,10 @@ initialization:
     Trans_LI_cov: [ 0.0001, 0.0001, 0.0001 ]
 
 mapping:
-    filter_size_surf: 0.05
-    filter_size_map: 0.15
-    gyr_cov: 10
-    acc_cov: 2
+    filter_size_surf: 0.5
+    filter_size_map: 0.5
+    gyr_cov: 0.5
+    acc_cov: 0.5
     b_acc_cov: 0.0001
     b_gyr_cov: 0.0001
     det_range: 100.0

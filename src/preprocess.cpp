@@ -111,7 +111,7 @@ void Preprocess::process_cut_frame_livox(const livox_ros_driver::CustomMsg::Cons
         }
     }
 }
-
+#define MAX_LINE_NUM 128
 void
 Preprocess::process_cut_frame_pcl2(const sensor_msgs::PointCloud2::ConstPtr &msg, deque<PointCloudXYZI::Ptr> &pcl_out,
                                    deque<double> &time_lidar, const int required_frame_num, int scan_count) {
@@ -123,6 +123,31 @@ Preprocess::process_cut_frame_pcl2(const sensor_msgs::PointCloud2::ConstPtr &msg
         pcl::fromROSMsg(*msg, pl_orig);
         int plsize = pl_orig.points.size();
         pl_surf.reserve(plsize);
+
+        bool is_first[MAX_LINE_NUM];
+        double yaw_fp[MAX_LINE_NUM] = {0};     // yaw of first scan point
+        double omega_l = 3.61;       // scan angular velocity (deg/ms)
+        float yaw_last[MAX_LINE_NUM] = {0.0};  // yaw of last scan point
+        float time_last[MAX_LINE_NUM] = {0.0}; // last offset time
+
+        if (pl_orig.points[plsize - 1].time > 0 && pl_orig.points[0].time > 0) {
+            cout << "Use given offset time." << endl;
+            given_offset_time = true;
+        } else {
+            cout << "Compute offset time using constant rotation model." << endl;
+            given_offset_time = false;
+            memset(is_first, true, sizeof(is_first));
+            double yaw_first = atan2(pl_orig.points[0].y, pl_orig.points[0].x) * 57.29578;
+            double yaw_end = yaw_first;
+            int layer_first = pl_orig.points[0].ring;
+            for (uint i = plsize - 1; i > 0; i--) {
+                if (pl_orig.points[i].ring == layer_first) {
+                    yaw_end = atan2(pl_orig.points[i].y, pl_orig.points[i].x) * 57.29578;
+                    break;
+                }
+            }
+        }
+
         for (int i = 0; i < plsize; i++) {
             PointType added_pt;
             added_pt.normal_x = 0;
@@ -133,6 +158,32 @@ Preprocess::process_cut_frame_pcl2(const sensor_msgs::PointCloud2::ConstPtr &msg
             added_pt.z = pl_orig.points[i].z;
             added_pt.intensity = pl_orig.points[i].intensity;
             added_pt.curvature = pl_orig.points[i].time * 1000.0;  //ms
+
+            if (!given_offset_time) {
+                int layer = pl_orig.points[i].ring;
+                double yaw_angle = atan2(added_pt.y, added_pt.x) * 57.2957;
+
+                if (is_first[layer]) {
+                    yaw_fp[layer] = yaw_angle;
+                    is_first[layer] = false;
+                    added_pt.curvature = 0.0;
+                    yaw_last[layer] = yaw_angle;
+                    time_last[layer] = added_pt.curvature;
+                    continue;
+                }
+                // compute offset time
+                if (yaw_angle <= yaw_fp[layer]) {
+                    added_pt.curvature = (yaw_fp[layer] - yaw_angle) / omega_l;
+                } else {
+                    added_pt.curvature = (yaw_fp[layer] - yaw_angle + 360.0) / omega_l;
+                }
+                if (added_pt.curvature < time_last[layer]) added_pt.curvature += 360.0 / omega_l;
+
+                yaw_last[layer] = yaw_angle;
+                time_last[layer] = added_pt.curvature;
+            }
+
+
             if (i % point_filter_num == 0 && pl_orig.points[i].ring < N_SCANS) {
                 if (added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z > blind)
                     pl_surf.points.push_back(added_pt);
@@ -455,7 +506,7 @@ void Preprocess::velodyne_handler(const sensor_msgs::PointCloud2::ConstPtr &msg)
     float yaw_last[MAX_LINE_NUM] = {0.0};  // yaw of last scan point
     float time_last[MAX_LINE_NUM] = {0.0}; // last offset time
 
-    if (pl_orig.points[plsize - 1].time > 0) {
+    if (pl_orig.points[plsize - 1].time > 0 && pl_orig.points[0].time > 0) {
         cout << "Use given offset time." << endl;
         given_offset_time = true;
     } else {

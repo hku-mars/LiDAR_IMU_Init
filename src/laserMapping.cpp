@@ -370,7 +370,7 @@ void standard_pcl_cbk(const sensor_msgs::PointCloud2::ConstPtr &msg) {
         printf("Self sync IMU and LiDAR, HARD time lag is %.10lf \n \n", timediff_imu_wrt_lidar);
     }
 
-    if (lidar_type == VELO || lidar_type == OUSTER || lidar_type == PANDAR && cut_frame) {
+    if ((lidar_type == VELO || lidar_type == OUSTER || lidar_type == PANDAR) && cut_frame) {
         deque<PointCloudXYZI::Ptr> ptr;
         deque<double> timestamp_lidar;
         p_pre->process_cut_frame_pcl2(msg, ptr, timestamp_lidar, cut_frame_num, scan_count);
@@ -808,10 +808,7 @@ int main(int argc, char **argv) {
     nh.param<int>("pcd_save/interval", pcd_save_interval, -1);
 
     cout << "lidar_type: " << lidar_type << endl;
-    if (!imu_en)
-        cout << "No IMU, use constant velocity model." << endl;
-    else
-        cout << "Use IMU, run Fast-LIO 2.0" << endl;
+    cout << "LiDAR-only odometry starts." << endl;
 
     path.header.stamp = ros::Time().fromSec(lidar_end_time);
     path.header.frame_id = "camera_init";
