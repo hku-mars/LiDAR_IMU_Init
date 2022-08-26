@@ -7,7 +7,7 @@
 
     <node pkg="lidar_imu_init" type="li_init" name="laserMapping" output="screen"/>
 
-    <param name="point_filter_num" type="int" value="1"/>
+    <param name="point_filter_num" type="int" value="3"/>
     <param name="max_iteration" type="int" value="5" />
     <param name="cube_side_length" type="double" value="1000" />
 
