@@ -143,7 +143,19 @@ Thanks for [HKU MaRS Lab](https://github.com/hku-mars),  [Fast-LIO2](https://git
 
 Thanks for [Livox Technology](https://www.livoxtech.com/) for equipment support.
 
-## 6. License
+
+
+## 6. Run FAST-LIO2 with LI-Init Results
+
+The most important parameters for FAST-LIO are the **extrinsic rotation and translation matrix**, and the **time offset**. 
+
+For the same device setup (the relative pose between IMU and LiDAR is fixed), **you can just write the extrinsic into FAST-LIO's configuration file**.
+
+As for time offset, it depends on the synchronization mechanism of the lidar and IMU. For pixhawk IMU, as far as I know, the timestamp is PC time. If the lidar's timestamp is also PC time, then the time offset might be the same. You can bypass temporal initialization next time. But for some lidars like Livox avia/horizon, the timestamp origin is the moment when the lidar is powered on. So, if you power it off and power it on again, the timestamp counts from 0. In this condition, temporal initialization is necessary at each time the lidar is powered on. So, you can run LI-Init once, record the time offset; then power off the lidar and IMU for minutes, then power on them and calibrate time offset again. **If the time offset are close,** it means you may **bypass time offset initialization** next time. Just **write down the time offset into time_diff_lidar_to_imu** of FAST-LIO's configuration file.
+
+As for IMU bias and gravity, FAST-LIO can refine them online. You don't need to write these prameters.
+
+## 7. License
 
 The source code is released under [GPLv2](http://www.gnu.org/licenses/) license.
 
