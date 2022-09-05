@@ -26,7 +26,7 @@ If our code is used in your project, please cite our paper following the bibtex 
 @article{zhu2022robust,
   title={Robust Real-time LiDAR-inertial Initialization},
   author={Zhu, Fangcheng and Ren, Yunfan and Zhang, Fu},
-  journal={arXiv preprint arXiv:2202.11006},
+  journal={arXiv preprint arXiv:2202.11006 (accepted by 2022IROS)},
   year={2022}
 }
 ```
