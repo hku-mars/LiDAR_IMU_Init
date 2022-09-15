@@ -242,7 +242,7 @@ Preprocess::process_cut_frame_pcl2(const sensor_msgs::PointCloud2::ConstPtr &msg
 
     int required_cut_num = required_frame_num;
 
-    if (scan_count < 3)
+    if (scan_count < 20)
         required_cut_num = 1;
 
 
