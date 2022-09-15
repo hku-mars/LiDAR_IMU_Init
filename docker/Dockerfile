@@ -8,6 +8,9 @@ RUN apt-get update && apt-get install -y cmake libeigen3-dev libpcl-dev \
     ros-melodic-rviz ros-melodic-pcl-ros ros-melodic-eigen-conversions \
     libatlas-base-dev libgoogle-glog-dev libsuitesparse-dev libglew-dev wget
 
+# Install matplotlib
+RUN apt-get update && apt-get install -y python-pip python-tk && pip install matplotlib
+
 # Install ceres-solver
 WORKDIR /home/
 RUN wget https://github.com/ceres-solver/ceres-solver/archive/refs/tags/2.0.0.tar.gz
