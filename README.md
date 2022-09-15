@@ -90,6 +90,8 @@ source devel/setup.bash
 
 **Please make sure the parameters in config/xxx.yaml are correct before running the project.**
 
+**It is highly recommended to stay still for more than 5 seconds after launch the algorithm, for accumulating dense initial map.**
+
 It is highly recommended to run LI-Init and record your own data simultaneously, because our algorithm is able to automatically detect the degree of excitation and instruct users how to give sufficient excitation (e.g. rotate or move along which direction).
 
 Theoretically livox_avia.launch supports mid-70, mid-40 LiDARs.
