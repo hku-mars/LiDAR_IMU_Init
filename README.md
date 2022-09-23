@@ -2,7 +2,7 @@
 
 **LI-Init** is a robust, real-time initialization method for LiDAR-inertial system. The proposed method calibrates the temporal offset and extrinsic parameter between LiDARs and IMUs, and also the gravity vector and IMU bias. Our method does not require any target or extra sensor, specific structured environment, prior environment point map or initial values of extrinsic and time offset. Our package address following key issues:
 
-1. A robust LiDAR odometry (**Fast LO**) modified from FAST-LIO2.
+1. A robust LiDAR odometry (**FAST-LO**) modified from FAST-LIO2.
 2. Fast and robust **temporal offset and extrinsic parameter calibration** between LiDAR and IMU without any hardware setup.
 3. Support **multiple LiDAR types**: both mechanical spinning LiDAR (Hesai, Velodyne, Ouster) and solid-state LiDAR ( Livox Avia/Mid360)
 4. Seamlessly merged into FAST-LIO2, as a robust initialization module.
