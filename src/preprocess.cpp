@@ -71,7 +71,7 @@ void Preprocess::process_cut_frame_livox(const livox_ros_driver::CustomMsg::Cons
                 pl_full[i].curvature = msg->points[i].offset_time / float(1000000);
 
                 double dist = pl_full[i].x * pl_full[i].x + pl_full[i].y * pl_full[i].y + pl_full[i].z * pl_full[i].z;
-                if (dist < blind) continue;
+                if (dist < blind * blind) continue;
 
                 if ((abs(pl_full[i].x - pl_full[i - 1].x) > 1e-7)
                     || (abs(pl_full[i].y - pl_full[i - 1].y) > 1e-7)
@@ -130,22 +130,13 @@ Preprocess::process_cut_frame_pcl2(const sensor_msgs::PointCloud2::ConstPtr &msg
         float yaw_last[MAX_LINE_NUM] = {0.0};  // yaw of last scan point
         float time_last[MAX_LINE_NUM] = {0.0}; // last offset time
 
-        if (pl_orig.points[plsize - 1].time > 0 || pl_orig.points[0].time > 0) {
+        if (pl_orig.points[plsize - 1].time > 0) {
             cout << "Use given offset time." << endl;
             given_offset_time = true;
         } else {
             cout << "Compute offset time using constant rotation model." << endl;
             given_offset_time = false;
             memset(is_first, true, sizeof(is_first));
-            double yaw_first = atan2(pl_orig.points[0].y, pl_orig.points[0].x) * 57.29578;
-            double yaw_end = yaw_first;
-            int layer_first = pl_orig.points[0].ring;
-            for (uint i = plsize - 1; i > 0; i--) {
-                if (pl_orig.points[i].ring == layer_first) {
-                    yaw_end = atan2(pl_orig.points[i].y, pl_orig.points[i].x) * 57.29578;
-                    break;
-                }
-            }
         }
 
         for (int i = 0; i < plsize; i++) {
@@ -158,6 +149,10 @@ Preprocess::process_cut_frame_pcl2(const sensor_msgs::PointCloud2::ConstPtr &msg
             added_pt.z = pl_orig.points[i].z;
             added_pt.intensity = pl_orig.points[i].intensity;
             added_pt.curvature = pl_orig.points[i].time * 1000.0;  //ms
+
+            double dist = added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z;
+            if ( dist < blind * blind || isnan(added_pt.x) || isnan(added_pt.y) || isnan(added_pt.z))
+                continue;
 
             if (!given_offset_time) {
                 int layer = pl_orig.points[i].ring;
@@ -185,8 +180,7 @@ Preprocess::process_cut_frame_pcl2(const sensor_msgs::PointCloud2::ConstPtr &msg
 
 
             if (i % point_filter_num == 0 && pl_orig.points[i].ring < N_SCANS) {
-                if (added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z > blind)
-                    pl_surf.points.push_back(added_pt);
+                pl_surf.points.push_back(added_pt);
             }
         }
     } else if (lidar_type == OUSTER) {
@@ -204,9 +198,13 @@ Preprocess::process_cut_frame_pcl2(const sensor_msgs::PointCloud2::ConstPtr &msg
             added_pt.z = pl_orig.points[i].z;
             added_pt.intensity = pl_orig.points[i].intensity;
             added_pt.curvature = pl_orig.points[i].t / 1e6;  //ns to ms
+
+            double dist = added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z;
+            if ( dist < blind * blind || isnan(added_pt.x) || isnan(added_pt.y) || isnan(added_pt.z))
+                continue;
+
             if (i % point_filter_num == 0 && pl_orig.points[i].ring < N_SCANS) {
-                if (added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z > blind)
-                    pl_surf.points.push_back(added_pt);
+                pl_surf.points.push_back(added_pt);
             }
         }
     } else {
@@ -224,9 +222,13 @@ Preprocess::process_cut_frame_pcl2(const sensor_msgs::PointCloud2::ConstPtr &msg
             added_pt.z = pl_orig.points[i].z;
             added_pt.intensity = pl_orig.points[i].intensity;
             added_pt.curvature = (pl_orig.points[i].timestamp - msg->header.stamp.toSec()) * 1000;  //s to ms
+
+            double dist = added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z;
+            if ( dist < blind * blind || isnan(added_pt.x) || isnan(added_pt.y) || isnan(added_pt.z))
+                continue;
+
             if (i % point_filter_num == 0 && pl_orig.points[i].ring < N_SCANS) {
-                if (added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z > blind)
-                    pl_surf.points.push_back(added_pt);
+                pl_surf.points.push_back(added_pt);
             }
         }
     }
@@ -311,8 +313,9 @@ void Preprocess::avia_handler(const livox_ros_driver::CustomMsg::ConstPtr &msg) 
                 pl_full[i].intensity = msg->points[i].reflectivity;
                 pl_full[i].curvature =
                         msg->points[i].offset_time / float(1000000); //use curvature as time of each laser points
+
                 double dist = pl_full[i].x * pl_full[i].x + pl_full[i].y * pl_full[i].y + pl_full[i].z * pl_full[i].z;
-                if (dist < blind) continue;
+                if (dist < blind * blind) continue;
 
                 if ((abs(pl_full[i].x - pl_full[i - 1].x) > 1e-7)
                     || (abs(pl_full[i].y - pl_full[i - 1].y) > 1e-7)
@@ -359,9 +362,8 @@ void Preprocess::avia_handler(const livox_ros_driver::CustomMsg::ConstPtr &msg) 
                     pl_full[i].curvature =
                             msg->points[i].offset_time / float(1000000); //use curvature as time of each laser points
 
-                    double dist =
-                            pl_full[i].x * pl_full[i].x + pl_full[i].y * pl_full[i].y + pl_full[i].z * pl_full[i].z;
-                    if (dist < blind) continue;
+                    double dist = pl_full[i].x * pl_full[i].x + pl_full[i].y * pl_full[i].y + pl_full[i].z * pl_full[i].z;
+                    if (dist < blind * blind) continue;
 
                     if ((abs(pl_full[i].x - pl_full[i - 1].x) > 1e-7)
                         || (abs(pl_full[i].y - pl_full[i - 1].y) > 1e-7)
@@ -391,7 +393,7 @@ void Preprocess::l515_handler(const sensor_msgs::PointCloud2::ConstPtr &msg) {
         double range = pl_orig.points[i].x * pl_orig.points[i].x + pl_orig.points[i].y * pl_orig.points[i].y +
                        pl_orig.points[i].z * pl_orig.points[i].z;
 
-        if (range < blind) continue;
+        if (range < blind * blind) continue;
 
         Eigen::Vector3d pt_vec;
         PointType added_pt;
@@ -422,9 +424,6 @@ void Preprocess::oust_handler(const sensor_msgs::PointCloud2::ConstPtr &msg) {
         }
 
         for (uint i = 0; i < plsize; i++) {
-            double range = pl_orig.points[i].x * pl_orig.points[i].x + pl_orig.points[i].y * pl_orig.points[i].y +
-                           pl_orig.points[i].z * pl_orig.points[i].z;
-            if (range < blind) continue;
             Eigen::Vector3d pt_vec;
             PointType added_pt;
             added_pt.x = pl_orig.points[i].x;
@@ -434,6 +433,11 @@ void Preprocess::oust_handler(const sensor_msgs::PointCloud2::ConstPtr &msg) {
             added_pt.normal_x = 0;
             added_pt.normal_y = 0;
             added_pt.normal_z = 0;
+
+            double dist = added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z;
+            if ( dist < blind * blind || isnan(added_pt.x) || isnan(added_pt.y) || isnan(added_pt.z))
+                continue;
+
             double yaw_angle = atan2(added_pt.y, added_pt.x) * 57.3;
             if (yaw_angle >= 180.0)
                 yaw_angle -= 360.0;
@@ -466,12 +470,6 @@ void Preprocess::oust_handler(const sensor_msgs::PointCloud2::ConstPtr &msg) {
     } else {
         for (int i = 0; i < pl_orig.points.size(); i++) {
             if (i % point_filter_num != 0) continue;
-
-            double range = pl_orig.points[i].x * pl_orig.points[i].x + pl_orig.points[i].y * pl_orig.points[i].y +
-                           pl_orig.points[i].z * pl_orig.points[i].z;
-
-            if (range < blind) continue;
-
             Eigen::Vector3d pt_vec;
             PointType added_pt;
             added_pt.x = pl_orig.points[i].x;
@@ -482,6 +480,11 @@ void Preprocess::oust_handler(const sensor_msgs::PointCloud2::ConstPtr &msg) {
             added_pt.normal_y = 0;
             added_pt.normal_z = 0;
             added_pt.curvature = pl_orig.points[i].t / 1e6;  //ms
+
+            double dist = added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z;
+            if ( dist < blind * blind || isnan(added_pt.x) || isnan(added_pt.y) || isnan(added_pt.z))
+                continue;
+
             if (pl_orig.points[i].ring < N_SCANS)
                 pl_surf.points.push_back(added_pt);
         }
@@ -506,22 +509,13 @@ void Preprocess::velodyne_handler(const sensor_msgs::PointCloud2::ConstPtr &msg)
     float yaw_last[MAX_LINE_NUM] = {0.0};  // yaw of last scan point
     float time_last[MAX_LINE_NUM] = {0.0}; // last offset time
 
-    if (pl_orig.points[plsize - 1].time > 0 && pl_orig.points[0].time > 0) {
+    if (pl_orig.points[plsize - 1].time > 0) {
         cout << "Use given offset time." << endl;
         given_offset_time = true;
     } else {
         cout << "Compute offset time using constant rotation model." << endl;
         given_offset_time = false;
         memset(is_first, true, sizeof(is_first));
-        double yaw_first = atan2(pl_orig.points[0].y, pl_orig.points[0].x) * 57.29578;
-        double yaw_end = yaw_first;
-        int layer_first = pl_orig.points[0].ring;
-        for (uint i = plsize - 1; i > 0; i--) {
-            if (pl_orig.points[i].ring == layer_first) {
-                yaw_end = atan2(pl_orig.points[i].y, pl_orig.points[i].x) * 57.29578;
-                break;
-            }
-        }
     }
 
     if (feature_enabled) {
@@ -542,6 +536,10 @@ void Preprocess::velodyne_handler(const sensor_msgs::PointCloud2::ConstPtr &msg)
             added_pt.z = pl_orig.points[i].z;
             added_pt.intensity = pl_orig.points[i].intensity;
             added_pt.curvature = pl_orig.points[i].time * 1000.0; // unit: ms
+
+            double dist = added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z;
+            if ( dist < blind * blind || isnan(added_pt.x) || isnan(added_pt.y) || isnan(added_pt.z))
+                continue;
 
             if (!given_offset_time) {
                 double yaw_angle = atan2(added_pt.y, added_pt.x) * 57.2957;
@@ -591,7 +589,6 @@ void Preprocess::velodyne_handler(const sensor_msgs::PointCloud2::ConstPtr &msg)
     } else {
         for (int i = 0; i < plsize; i++) {
             PointType added_pt;
-
             added_pt.normal_x = 0;
             added_pt.normal_y = 0;
             added_pt.normal_z = 0;
@@ -600,6 +597,10 @@ void Preprocess::velodyne_handler(const sensor_msgs::PointCloud2::ConstPtr &msg)
             added_pt.z = pl_orig.points[i].z;
             added_pt.intensity = pl_orig.points[i].intensity;
             added_pt.curvature = pl_orig.points[i].time * 1000.0; //ms
+
+            double dist = added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z;
+            if ( dist < blind * blind || isnan(added_pt.x) || isnan(added_pt.y) || isnan(added_pt.z))
+                continue;
 
             if (!given_offset_time) {
                 int layer = pl_orig.points[i].ring;
@@ -628,9 +629,7 @@ void Preprocess::velodyne_handler(const sensor_msgs::PointCloud2::ConstPtr &msg)
             }
 
             if (i % point_filter_num == 0) {
-                if (added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z > blind) {
-                    pl_surf.points.push_back(added_pt);
-                }
+                pl_surf.points.push_back(added_pt);
             }
         }
     }
@@ -643,7 +642,7 @@ void Preprocess::velodyne_handler_kitti(const sensor_msgs::PointCloud2::ConstPtr
     for (int i = 0; i < pl_full.size(); i++) {
         if (i % point_filter_num == 0) {
             double dist = pl_full[i].x * pl_full[i].x + pl_full[i].y * pl_full[i].y + pl_full[i].z * pl_full[i].z;
-            if (dist > blind)
+            if (dist > blind * blind)
                 pl_surf.points.push_back(pl_full[i]);
         }
     }
