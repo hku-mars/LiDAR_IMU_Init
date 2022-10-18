@@ -130,7 +130,7 @@ Preprocess::process_cut_frame_pcl2(const sensor_msgs::PointCloud2::ConstPtr &msg
         float yaw_last[MAX_LINE_NUM] = {0.0};  // yaw of last scan point
         float time_last[MAX_LINE_NUM] = {0.0}; // last offset time
 
-        if (pl_orig.points[plsize - 1].time > 0 && pl_orig.points[0].time > 0) {
+        if (pl_orig.points[plsize - 1].time > 0 || pl_orig.points[0].time > 0) {
             cout << "Use given offset time." << endl;
             given_offset_time = true;
         } else {
