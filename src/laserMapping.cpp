@@ -857,6 +857,8 @@ int main(int argc, char **argv) {
     Jaco_rot.setZero();
 
     /*** debug record ***/
+    boost::filesystem::create_directories(root_dir + "/Log");
+    boost::filesystem::create_directories(root_dir + "/result");
     ofstream fout_out;
     fout_out.open(DEBUG_FILE_DIR("mat_out.txt"), ios::out);
     fout_result.open(RESULT_FILE_DIR("Initialization_result.txt"), ios::out);
