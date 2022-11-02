@@ -93,6 +93,28 @@ POINT_CLOUD_REGISTER_POINT_STRUCT(pandar_ros::Point,
                                           (std::uint16_t, ring, ring)
 )
 
+//ANCHOR robosense modify
+namespace robosense_ros {
+    struct EIGEN_ALIGN16 Point {
+        PCL_ADD_POINT4D;
+        std::uint8_t intensity;
+        std::uint16_t ring;
+        double timestamp;
+        EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+    };
+}
+
+// namespace robosense_ros
+POINT_CLOUD_REGISTER_POINT_STRUCT(robosense_ros::Point,
+                                  (float, x, x)
+                                          (float, y, y)
+                                          (float, z, z)
+                                          // use std::uint32_t to avoid conflicting with pcl::uint32_t
+                                          (std::uint8_t, intensity, intensity)
+                                          (std::uint16_t, ring, ring)
+                                          (double, timestamp, timestamp)
+)
+
 class Preprocess
 {
   public:

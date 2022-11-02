@@ -131,7 +131,6 @@ Preprocess::process_cut_frame_pcl2(const sensor_msgs::PointCloud2::ConstPtr &msg
         float time_last[MAX_LINE_NUM] = {0.0}; // last offset time
 
         if (pl_orig.points[plsize - 1].time > 0) {
-            cout << "Use given offset time." << endl;
             given_offset_time = true;
         } else {
             cout << "Compute offset time using constant rotation model." << endl;
@@ -207,7 +206,7 @@ Preprocess::process_cut_frame_pcl2(const sensor_msgs::PointCloud2::ConstPtr &msg
                 pl_surf.points.push_back(added_pt);
             }
         }
-    } else {
+    } else if(lidar_type == PANDAR) {
         pcl::PointCloud<pandar_ros::Point> pl_orig;
         pcl::fromROSMsg(*msg, pl_orig);
         int plsize = pl_orig.points.size();
@@ -231,6 +230,73 @@ Preprocess::process_cut_frame_pcl2(const sensor_msgs::PointCloud2::ConstPtr &msg
                 pl_surf.points.push_back(added_pt);
             }
         }
+    }else if(lidar_type == ROBOSENSE){
+        pcl::PointCloud<robosense_ros::Point> pl_orig;
+        pcl::fromROSMsg(*msg, pl_orig);
+        int plsize = pl_orig.points.size();
+        pl_surf.reserve(plsize);
+
+        bool is_first[MAX_LINE_NUM];
+        double yaw_fp[MAX_LINE_NUM] = {0};     // yaw of first scan point
+        double omega_l = 3.61;       // scan angular velocity (deg/ms)
+        float yaw_last[MAX_LINE_NUM] = {0.0};  // yaw of last scan point
+        float time_last[MAX_LINE_NUM] = {0.0}; // last offset time
+
+        if (pl_orig.points[plsize - 1].timestamp > 0) {
+            given_offset_time = true;
+        } else {
+            cout << "Compute offset time using constant rotation model." << endl;
+            given_offset_time = false;
+            memset(is_first, true, sizeof(is_first));
+        }
+
+        for (int i = 0; i < plsize; i++) {
+            PointType added_pt;
+            added_pt.normal_x = 0;
+            added_pt.normal_y = 0;
+            added_pt.normal_z = 0;
+            added_pt.x = pl_orig.points[i].x;
+            added_pt.y = pl_orig.points[i].y;
+            added_pt.z = pl_orig.points[i].z;
+            added_pt.intensity = pl_orig.points[i].intensity;
+            added_pt.curvature = (pl_orig.points[i].timestamp - msg->header.stamp.toSec() + 0.1)* 1000.0;  //ms
+
+
+            double dist = added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z;
+            if ( dist < blind * blind || isnan(added_pt.x) || isnan(added_pt.y) || isnan(added_pt.z))
+                continue;
+
+            if (!given_offset_time) {
+                int layer = pl_orig.points[i].ring;
+                double yaw_angle = atan2(added_pt.y, added_pt.x) * 57.2957;
+
+                if (is_first[layer]) {
+                    yaw_fp[layer] = yaw_angle;
+                    is_first[layer] = false;
+                    added_pt.curvature = 0.0;
+                    yaw_last[layer] = yaw_angle;
+                    time_last[layer] = added_pt.curvature;
+                    continue;
+                }
+                // compute offset time
+                if (yaw_angle <= yaw_fp[layer]) {
+                    added_pt.curvature = (yaw_fp[layer] - yaw_angle) / omega_l;
+                } else {
+                    added_pt.curvature = (yaw_fp[layer] - yaw_angle + 360.0) / omega_l;
+                }
+                if (added_pt.curvature < time_last[layer]) added_pt.curvature += 360.0 / omega_l;
+
+                yaw_last[layer] = yaw_angle;
+                time_last[layer] = added_pt.curvature;
+            }
+
+            if (i % point_filter_num == 0 && pl_orig.points[i].ring < N_SCANS) {
+                pl_surf.points.push_back(added_pt);
+            }
+        }
+    }else{
+        cout << BOLDRED << "Wrong LiDAR Type!!!" << endl;
+        return;
     }
 
 
@@ -491,8 +557,6 @@ void Preprocess::oust_handler(const sensor_msgs::PointCloud2::ConstPtr &msg) {
     }
 }
 
-#define MAX_LINE_NUM 64
-
 void Preprocess::velodyne_handler(const sensor_msgs::PointCloud2::ConstPtr &msg) {
     pl_surf.clear();
     pl_corn.clear();
@@ -510,7 +574,6 @@ void Preprocess::velodyne_handler(const sensor_msgs::PointCloud2::ConstPtr &msg)
     float time_last[MAX_LINE_NUM] = {0.0}; // last offset time
 
     if (pl_orig.points[plsize - 1].time > 0) {
-        cout << "Use given offset time." << endl;
         given_offset_time = true;
     } else {
         cout << "Compute offset time using constant rotation model." << endl;

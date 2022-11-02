@@ -320,6 +320,22 @@ public:
         return Lidar_state_group;
     }
 
+    void IMU_state_group_ALL_pop_front(){
+        IMU_state_group_ALL.pop_front();
+    }
+
+    void Lidar_state_group_pop_front(){
+        Lidar_state_group.pop_front();
+    }
+
+    int IMU_state_group_ALL_size(){
+        return IMU_state_group_ALL.size();
+    }
+
+    int Lidar_state_group_size(){
+        return Lidar_state_group.size();
+    }
+
 private:
     deque<CalibState> IMU_state_group;
     deque<CalibState> Lidar_state_group;

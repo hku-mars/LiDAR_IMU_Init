@@ -370,7 +370,7 @@ void standard_pcl_cbk(const sensor_msgs::PointCloud2::ConstPtr &msg) {
         printf("Self sync IMU and LiDAR, HARD time lag is %.10lf \n \n", timediff_imu_wrt_lidar);
     }
 
-    if ((lidar_type == VELO || lidar_type == OUSTER || lidar_type == PANDAR) && cut_frame) {
+    if ((lidar_type == VELO || lidar_type == OUSTER || lidar_type == PANDAR || lidar_type == ROBOSENSE) && cut_frame) {
         deque<PointCloudXYZI::Ptr> ptr;
         deque<double> timestamp_lidar;
         p_pre->process_cut_frame_pcl2(msg, ptr, timestamp_lidar, cut_frame_num, scan_count);
@@ -436,16 +436,22 @@ void imu_cbk(const sensor_msgs::Imu::ConstPtr &msg_in, const ros::Publisher &pub
     imu_buffer.push_back(msg);
 
     // push all IMU meas into Init_LI
-    if (!imu_en && !data_accum_finished)
+    if (!imu_en && !data_accum_finished){
+        if(Init_LI->IMU_state_group_ALL_size() > 1500){
+            Init_LI->IMU_state_group_ALL_pop_front();
+        }
         Init_LI->push_ALL_IMU_CalibState(msg, mean_acc_norm);
+    }
 
     mtx_buffer.unlock();
     sig_buffer.notify_all();
 }
 
 bool sync_packages(MeasureGroup &meas) {
-    if (lidar_buffer.empty() || imu_buffer.empty())
+    if (lidar_buffer.empty() || imu_buffer.empty()){
         return false;
+    }
+
 
     /** push a lidar scan **/
     if (!lidar_pushed) {
@@ -470,6 +476,7 @@ bool sync_packages(MeasureGroup &meas) {
 
     if (last_timestamp_imu < lidar_end_time)
         return false;
+
 
     /** push imu data, and pop from imu buffer **/
     double imu_time = imu_buffer.front()->header.stamp.toSec();
@@ -1223,6 +1230,9 @@ int main(int argc, char **argv) {
 
             if (!imu_en && !data_accum_finished && data_accum_start) {
                 //Push Lidar's Angular velocity and linear velocity
+                if(Init_LI->Lidar_state_group_size() > 1500){
+                    Init_LI->Lidar_state_group_pop_front();
+                }
                 Init_LI->push_Lidar_CalibState(state.rot_end, state.bias_g, state.vel_end, lidar_end_time);
                 //Data Accumulation Sufficience Appraisal
                 data_accum_finished = Init_LI->data_sufficiency_assess(Jaco_rot, frame_num, state.bias_g,
