@@ -436,12 +436,8 @@ void imu_cbk(const sensor_msgs::Imu::ConstPtr &msg_in, const ros::Publisher &pub
     imu_buffer.push_back(msg);
 
     // push all IMU meas into Init_LI
-    if (!imu_en && !data_accum_finished){
-        if(Init_LI->IMU_state_group_ALL_size() > 1500){
-            Init_LI->IMU_state_group_ALL_pop_front();
-        }
+    if (!imu_en && !data_accum_finished)
         Init_LI->push_ALL_IMU_CalibState(msg, mean_acc_norm);
-    }
 
     mtx_buffer.unlock();
     sig_buffer.notify_all();
@@ -1230,9 +1226,6 @@ int main(int argc, char **argv) {
 
             if (!imu_en && !data_accum_finished && data_accum_start) {
                 //Push Lidar's Angular velocity and linear velocity
-                if(Init_LI->Lidar_state_group_size() > 1500){
-                    Init_LI->Lidar_state_group_pop_front();
-                }
                 Init_LI->push_Lidar_CalibState(state.rot_end, state.bias_g, state.vel_end, lidar_end_time);
                 //Data Accumulation Sufficience Appraisal
                 data_accum_finished = Init_LI->data_sufficiency_assess(Jaco_rot, frame_num, state.bias_g,

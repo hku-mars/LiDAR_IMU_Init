@@ -4,6 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /mapping1/surround1
         - /mapping1/currPoints1/Autocompute Value Bounds1
         - /Odometry1/Odometry1/Shape1
       Splitter Ratio: 0.6432291865348816
@@ -25,7 +26,7 @@ Panels:
   - Class: rviz/Time
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: currPoints
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -65,15 +66,15 @@ Visualization Manager:
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
-            Max Value: 14.840249061584473
-            Min Value: -1.7906135320663452
+            Max Value: 3.5015556812286377
+            Min Value: -0.5555461645126343
             Value: true
           Axis: Z
           Channel Name: intensity
           Class: rviz/PointCloud2
           Color: 238; 238; 236
           Color Transformer: AxisColor
-          Decay Time: 0.10000000149011612
+          Decay Time: 0
           Enabled: true
           Invert Rainbow: false
           Max Color: 255; 255; 255
@@ -204,7 +205,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: Intensity
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 239; 41; 41
       Max Intensity: 0
@@ -221,7 +222,7 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -234,7 +235,7 @@ Visualization Manager:
       Color: 138; 226; 52
       Color Transformer: FlatColor
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 138; 226; 52
       Min Color: 138; 226; 52
@@ -249,7 +250,7 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -262,7 +263,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: Intensity
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Min Color: 0; 0; 0
@@ -277,7 +278,7 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /planner_normal
@@ -324,7 +325,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 27.640085220336914
+      Distance: 17.58704948425293
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -332,17 +333,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -0.8573362827301025
-        Y: 1.0231647491455078
-        Z: 1.1920928955078125e-06
+        X: 4.220323085784912
+        Y: 5.803979873657227
+        Z: -8.34069624033873e-07
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7947969436645508
+      Pitch: 0.6947980523109436
       Target Frame: camera_init
-      Yaw: 2.4263365268707275
+      Yaw: 1.418147325515747
     Saved: ~
 Window Geometry:
   Displays:
