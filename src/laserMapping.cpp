@@ -920,16 +920,16 @@ int main(int argc, char **argv) {
             svd_time = 0;
             t0 = omp_get_wtime();
 
-            p_imu->Process(Measures, state, feats_undistort);
-            state_propagat = state;
-
             if (feats_undistort->empty() || (feats_undistort == NULL)) {
                 first_lidar_time = Measures.lidar_beg_time;
                 p_imu->first_lidar_time = first_lidar_time;
-                ROS_WARN("FAST-LIO not ready, no points stored.");
-                online_calib_starts_time = first_lidar_time;
-                continue;
+                ROS_WARN("LI-Init not ready, no points stored.");
             }
+
+            p_imu->Process(Measures, state, feats_undistort);
+            state_propagat = state;
+
+
 
 
 
