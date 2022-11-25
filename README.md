@@ -107,7 +107,7 @@ Edit `config/xxx.yaml` to set the below parameters:
 
 * `cut_frame_num`: Split one frame into sub-frames, to improve the odom frequency. Must be positive integers.
 * `orig_odom_freq` (Hz): Original LiDAR input frequency. For most LiDARs, the input frequency is 10 Hz. It is recommended that cut_frame_num * orig_odom_freq = 30 for mechinical spinning LiDAR,  cut_frame_num * orig_odom_freq = 50 for livox LiDARs.
-* `mean_acc_norm` ($m/s^2$):  The acceleration norm when IMU is stationary. Usually, 9.805 for normal IMU, 1 for livox built-in IMU.
+* `mean_acc_norm` (m/s^2):  The acceleration norm when IMU is stationary. Usually, 9.805 for normal IMU, 1 for livox built-in IMU.
 * `data_accum_length`: A threshold to assess if the data is enough for initialization. Too small may lead to bad-quality results.
 * `online_refine_time` (second):  The time of extrinsic refinement with FAST-LIO2. About 15~30 seconds of refinement is recommended.
 * `filter_size_surf` (meter):  It is recommended that filter_size_surf = 0.05~0.15 for indoor scenes, filter_size_surf = 0.5 for outdoor scenes.
