@@ -88,6 +88,8 @@ source devel/setup.bash
 
 ## 3. Run Your Own Data
 
+**Please make sure the unit of your input angular velocity is rad/s.** If it is degree/s, please refer to https://github.com/hku-mars/LiDAR_IMU_Init/issues/43.
+
 **Please make sure the parameters in config/xxx.yaml are correct before running the project.**
 
 **It is highly recommended to stay still for more than 5 seconds after launch the algorithm, for accumulating dense initial map.**
