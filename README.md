@@ -23,15 +23,14 @@ our related papers are now available on **arxiv**:  [Robust Real-time LiDAR-iner
 
 If our code is used in your project, please cite our paper following the bibtex below:
 ```
-@INPROCEEDINGS{9982225,
+@inproceedings{zhu2022robust,
+  title={Robust real-time lidar-inertial initialization},
   author={Zhu, Fangcheng and Ren, Yunfan and Zhang, Fu},
-  booktitle={2022 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)}, 
-  title={Robust Real-time LiDAR-inertial Initialization}, 
+  booktitle={2022 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+  pages={3948--3955},
   year={2022},
-  volume={},
-  number={},
-  pages={3948-3955},
-  doi={10.1109/IROS47612.2022.9982225}}
+  organization={IEEE}
+}
 ```
 
 ### Related Video:
