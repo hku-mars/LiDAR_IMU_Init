@@ -14,7 +14,7 @@ initialization:
     orig_odom_freq: 10
     mean_acc_norm: 9.81 # 1: for livox built-in IMU
     online_refine_time: 15.0
-    data_accum_length: 500
+    data_accum_length: 800
     Rot_LI_cov: [ 0.00005, 0.00005, 0.00005 ]
     Trans_LI_cov: [ 0.0001, 0.0001, 0.0001 ]
 

@@ -79,10 +79,8 @@ double filter_size_surf_min = 0, filter_size_map_min = 0;
 double cube_len = 0, total_distance = 0, lidar_end_time = 0, first_lidar_time = 0.0;
 
 // Time Log Variables
-double kdtree_incremental_time = 0.0, kdtree_search_time = 0.0, kdtree_delete_time = 0.0;
-int kdtree_delete_counter = 0, kdtree_size_st = 0, kdtree_size_end = 0, add_point_size = 0;
-double search_time_rec[100000];
-double match_time = 0, solve_time = 0, solve_const_H_time = 0;
+int kdtree_size_st = 0, kdtree_size_end = 0, add_point_size = 0;
+
 
 int lidar_type, pcd_save_interval = -1, pcd_index = 0;
 bool lidar_pushed, flg_reset, flg_exit = false, flg_EKF_inited = true;
@@ -261,8 +259,7 @@ bool Localmap_Initialized = false;
 
 void lasermap_fov_segment() {
     cub_needrm.clear();
-    kdtree_delete_counter = 0;
-    kdtree_delete_time = 0.0;
+
     pointBodyToWorld(XAxisPoint_body, XAxisPoint_world);
     V3D pos_LiD = state.pos_end;
 
@@ -304,12 +301,7 @@ void lasermap_fov_segment() {
         }
     }
     LocalMap_Points = New_LocalMap_Points;
-
     points_cache_collect();
-    double delete_begin = omp_get_wtime();
-    if (cub_needrm.size() > 0) kdtree_delete_counter = ikdtree.Delete_Point_Boxes(cub_needrm);
-    kdtree_delete_time = omp_get_wtime() - delete_begin;
-    printf("Delete time: %0.6f, delete size: %d\n", kdtree_delete_time, kdtree_delete_counter);
 }
 
 double timediff_imu_wrt_lidar = 0.0;
@@ -317,7 +309,6 @@ bool timediff_set_flg = false;
 
 void livox_pcl_cbk(const livox_ros_driver::CustomMsg::ConstPtr &msg) {
     mtx_buffer.lock();
-    double preprocess_start_time = omp_get_wtime();
     scan_count++;
     if (msg->header.stamp.toSec() < last_timestamp_lidar) {
         ROS_WARN("lidar loop back, clear buffer");
@@ -356,7 +347,6 @@ void livox_pcl_cbk(const livox_ros_driver::CustomMsg::ConstPtr &msg) {
 void standard_pcl_cbk(const sensor_msgs::PointCloud2::ConstPtr &msg) {
     mtx_buffer.lock();
     scan_count++;
-    double preprocess_start_time = omp_get_wtime();
     if (msg->header.stamp.toSec() < last_timestamp_lidar) {
         ROS_ERROR("lidar loop back, clear Lidar buffer.");
         lidar_buffer.clear();
@@ -563,11 +553,9 @@ void map_incremental() {
         }
     }
 
-    double st_time = omp_get_wtime();
     add_point_size = ikdtree.Add_Points(PointToAdd, true);
     ikdtree.Add_Points(PointNoNeedDownsample, false);
     add_point_size = PointToAdd.size() + PointNoNeedDownsample.size();
-    kdtree_incremental_time = omp_get_wtime() - st_time;
 }
 
 void publish_frame_world(const ros::Publisher &pubLaserCloudFullRes) {
@@ -911,14 +899,6 @@ int main(int argc, char **argv) {
                 continue;
             }
 
-            double t0, t1, t2, t3, t4, t5, match_start, solve_start, svd_time;
-
-            match_time = 0;
-            kdtree_search_time = 0.0;
-            solve_time = 0;
-            solve_const_H_time = 0;
-            svd_time = 0;
-            t0 = omp_get_wtime();
 
             if (feats_undistort->empty() || (feats_undistort == NULL)) {
                 first_lidar_time = Measures.lidar_beg_time;
@@ -939,7 +919,6 @@ int main(int argc, char **argv) {
             /*** downsample the feature points in a scan ***/
             downSizeFilterSurf.setInputCloud(feats_undistort);
             downSizeFilterSurf.filter(*feats_down_body);
-            t1 = omp_get_wtime();
             feats_down_size = feats_down_body->points.size();
             /*** initialize the map kdtree ***/
             if (ikdtree.Root_Node == nullptr) {
@@ -967,7 +946,7 @@ int main(int argc, char **argv) {
             Nearest_Points.resize(feats_down_size);
             int rematch_num = 0;
             bool nearest_search_en = true;
-            t2 = omp_get_wtime();
+
 
             /*** iterated state estimation ***/
             std::vector<M3D> body_var;
@@ -976,10 +955,10 @@ int main(int argc, char **argv) {
             crossmat_list.reserve(feats_down_size);
 
 
-            double t_update_start = omp_get_wtime();
+
 
             for (iterCount = 0; iterCount < NUM_MAX_ITERATIONS; iterCount++) {
-                match_start = omp_get_wtime();
+
                 laserCloudOri->clear();
                 corr_normvect->clear();
                 total_residual = 0.0;
@@ -997,7 +976,7 @@ int main(int argc, char **argv) {
                     vector<float> pointSearchSqDis(NUM_MATCH_POINTS);
                     auto &points_near = Nearest_Points[i];
                     uint8_t search_flag = 0;
-                    double search_start = omp_get_wtime();
+
                     if (nearest_search_en) {
                         /** Find the closest surfaces in the map **/
                         ikdtree.Nearest_Search(point_world, NUM_MATCH_POINTS, points_near, pointSearchSqDis, 5);
@@ -1005,8 +984,6 @@ int main(int argc, char **argv) {
                             point_selected_surf[i] = false;
                         else
                             point_selected_surf[i] = !(pointSearchSqDis[NUM_MATCH_POINTS - 1] > 5);
-
-                        search_time_rec[i] = omp_get_wtime() - search_start;
                     }
 
                     res_last[i] = -1000.0f;
@@ -1045,8 +1022,6 @@ int main(int argc, char **argv) {
                 }
 
                 res_mean_last = total_residual / effect_feat_num;
-                match_time = omp_get_wtime() - match_start;
-                solve_start = omp_get_wtime();
 
                 /*** Computation of Measurement Jacobian matrix H and measurents vector ***/
 
@@ -1097,8 +1072,6 @@ int main(int argc, char **argv) {
                     meas_vec(i) = -norm_p.intensity;
                 }
 
-
-                solve_const_H_time += omp_get_wtime() - solve_start;
                 MatrixXd K(DIM_STATE, effect_feat_num);
 
                 EKF_stop_flg = false;
@@ -1158,24 +1131,19 @@ int main(int argc, char **argv) {
                     }
                     EKF_stop_flg = true;
                 }
-                solve_time += omp_get_wtime() - solve_start;
 
                 if (EKF_stop_flg) break;
             }
 
-
-            for (int i = 0; i < feats_down_size; i++) kdtree_search_time += search_time_rec[i];
             #endif
-            double t_update_end = omp_get_wtime();
+
 
             /******* Publish odometry *******/
             publish_odometry(pubOdomAftMapped);
 
             /*** add the feature points to map kdtree ***/
-            t3 = omp_get_wtime();
             map_incremental();
 
-            t5 = omp_get_wtime();
             kdtree_size_end = ikdtree.size();
 
             /***** Device starts to move, data accmulation begins. ****/
