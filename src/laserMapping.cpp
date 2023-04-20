@@ -967,6 +967,7 @@ int main(int argc, char **argv) {
                 #ifdef MP_EN
                     omp_set_num_threads(MP_PROC_NUM);
                     #pragma omp parallel for
+                #endif
                 for (int i = 0; i < feats_down_size; i++) {
                     PointType &point_body = feats_down_body->points[i];
                     PointType &point_world = feats_down_world->points[i];
@@ -1134,9 +1135,6 @@ int main(int argc, char **argv) {
 
                 if (EKF_stop_flg) break;
             }
-
-            #endif
-
 
             /******* Publish odometry *******/
             publish_odometry(pubOdomAftMapped);

@@ -426,7 +426,6 @@ void ImuProcess::propagation_and_undist(const MeasureGroup &meas, StatesGroup &s
       }
     }
   }
-
 }
 
 
