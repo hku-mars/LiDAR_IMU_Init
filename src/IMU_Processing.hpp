@@ -383,47 +383,34 @@ void ImuProcess::propagation_and_undist(const MeasureGroup &meas, StatesGroup &s
 
   if (lidar_type != L515)
   {
-    auto pos_liD_e = state_inout.pos_end + state_inout.rot_end * state_inout.offset_T_L_I;
-    // auto R_liD_e   = state_inout.rot_end * Lidar_R_to_IMU;
-
     #ifdef DEBUG_PRINT
       cout<<"[ IMU Process ]: vel "<<state_inout.vel_end.transpose()<<" pos "<<state_inout.pos_end.transpose()<<" ba"<<state_inout.bias_a.transpose()<<" bg "<<state_inout.bias_g.transpose()<<endl;
       cout<<"propagated cov: "<<state_inout.cov.diagonal().transpose()<<endl;
     #endif
-
     /*** un-distort each lidar point (backward propagation) ***/
     auto it_pcl = pcl_out.points.end() - 1; //a single point in k-th frame
     for (auto it_kp = IMUpose.end() - 1; it_kp != IMUpose.begin(); it_kp--)
     {
-      auto head = it_kp - 1;
-      R_imu<<MAT_FROM_ARRAY(head->rot);
-      acc_imu<<VEC_FROM_ARRAY(head->acc);
-      vel_imu<<VEC_FROM_ARRAY(head->vel);
-      pos_imu<<VEC_FROM_ARRAY(head->pos);
-      angvel_avr<<VEC_FROM_ARRAY(head->gyr);
-
-      for(; it_pcl->curvature / double(1000) > head->offset_time; it_pcl --)
-      {
-        dt = it_pcl->curvature / double(1000) - head->offset_time; //dt = t_j - t_i > 0
-
-        /* Transform to the 'scan-end' IMU frame（I_k frame）using only rotation
-        * Note: Compensation direction is INVERSE of Frame's moving direction
-        * So if we want to compensate a point at timestamp-i to the frame-e
-        * P_compensate = R_imu_e ^ T * (R_i * P_i + T_ei) where T_ei is represented in global frame */
-
-        M3D R_i(R_imu * Exp(angvel_avr, dt));
-        V3D T_ei(pos_imu + vel_imu * dt + 0.5 * acc_imu * dt * dt + R_i * state_inout.offset_T_L_I - pos_liD_e);
-
-        V3D P_i(it_pcl->x, it_pcl->y, it_pcl->z);
-        V3D P_compensate = state_inout.rot_end.transpose() * (R_i * P_i + T_ei);
-
-        /// save Undistorted points and their rotation
-        it_pcl->x = P_compensate(0);
-        it_pcl->y = P_compensate(1);
-        it_pcl->z = P_compensate(2);
-
-        if (it_pcl == pcl_out.points.begin()) break;
-      }
+        auto head = it_kp - 1;//t_i时刻的IMU值，满足t_i < t_j
+        R_imu << MAT_FROM_ARRAY(head->rot);
+        acc_imu << VEC_FROM_ARRAY(head->acc);
+        // cout<<"head imu acc: "<<acc_imu.transpose()<<endl;
+        vel_imu << VEC_FROM_ARRAY(head->vel);
+        pos_imu << VEC_FROM_ARRAY(head->pos);
+        angvel_avr << VEC_FROM_ARRAY(head->gyr);
+        for (; it_pcl->curvature / double(1000) > head->offset_time; it_pcl--) {
+            dt = it_pcl->curvature / double(1000) - head->offset_time; //dt = t_j - t_i > 0
+            /* Transform to the 'scan-end' IMU frame（I_k frame）using only rotation*/
+            M3D R_i(R_imu * Exp(angvel_avr, dt));
+            V3D P_i = pos_imu + vel_imu * dt + 0.5 * acc_imu * dt * dt;
+            V3D p_in(it_pcl->x, it_pcl->y, it_pcl->z);
+            V3D P_compensate = state_inout.offset_R_L_I.transpose() * (state_inout.rot_end.transpose() * (R_i * (state_inout.offset_R_L_I * p_in + state_inout.offset_T_L_I) + P_i - state_inout.pos_end) - state_inout.offset_T_L_I);
+            /// save Undistorted points
+            it_pcl->x = P_compensate(0);
+            it_pcl->y = P_compensate(1);
+            it_pcl->z = P_compensate(2);
+            if (it_pcl == pcl_out.points.begin()) break;
+        }
     }
   }
 }
