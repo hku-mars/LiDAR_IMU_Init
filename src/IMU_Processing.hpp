@@ -391,7 +391,7 @@ void ImuProcess::propagation_and_undist(const MeasureGroup &meas, StatesGroup &s
     auto it_pcl = pcl_out.points.end() - 1; //a single point in k-th frame
     for (auto it_kp = IMUpose.end() - 1; it_kp != IMUpose.begin(); it_kp--)
     {
-        auto head = it_kp - 1;//t_i时刻的IMU值，满足t_i < t_j
+        auto head = it_kp - 1;
         R_imu << MAT_FROM_ARRAY(head->rot);
         acc_imu << VEC_FROM_ARRAY(head->acc);
         // cout<<"head imu acc: "<<acc_imu.transpose()<<endl;
@@ -400,7 +400,7 @@ void ImuProcess::propagation_and_undist(const MeasureGroup &meas, StatesGroup &s
         angvel_avr << VEC_FROM_ARRAY(head->gyr);
         for (; it_pcl->curvature / double(1000) > head->offset_time; it_pcl--) {
             dt = it_pcl->curvature / double(1000) - head->offset_time; //dt = t_j - t_i > 0
-            /* Transform to the 'scan-end' IMU frame（I_k frame）using only rotation*/
+            /* Transform to the 'scan-end' IMU frame（I_k frame)*/
             M3D R_i(R_imu * Exp(angvel_avr, dt));
             V3D P_i = pos_imu + vel_imu * dt + 0.5 * acc_imu * dt * dt;
             V3D p_in(it_pcl->x, it_pcl->y, it_pcl->z);
