@@ -9,11 +9,11 @@ preprocess:
     feature_extract_en: false
 
 initialization:
-    cut_frame_num: 3 # must be positive integer
+    cut_frame_num: 4 # must be positive integer
     orig_odom_freq: 10
     mean_acc_norm: 9.805
     online_refine_time: 15.0
-    data_accum_length: 500
+    data_accum_length: 300
     Rot_LI_cov: [ 0.00005, 0.00005, 0.00005 ]
     Trans_LI_cov: [ 0.00001, 0.00001, 0.00000001 ]
 
@@ -24,7 +24,7 @@ mapping:
     acc_cov: 2
     b_acc_cov: 0.0001
     b_gyr_cov: 0.0001
-    det_range:     120.0
+    det_range: 120.0
 
 publish:
     path_en:  true

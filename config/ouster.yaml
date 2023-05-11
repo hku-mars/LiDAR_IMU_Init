@@ -24,7 +24,7 @@ mapping:
     acc_cov: 2
     b_acc_cov: 0.0001
     b_gyr_cov: 0.0001
-    det_range:     150.0
+    det_range: 150.0
 
 publish:
     path_en:  true

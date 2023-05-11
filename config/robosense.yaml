@@ -9,7 +9,6 @@ preprocess:
     feature_extract_en: false
 
 initialization:
-    cut_frame: true # false: do not cut input pointcloud
     cut_frame_num: 3 # must be positive integer
     orig_odom_freq: 10
     mean_acc_norm: 9.81 # 1: for livox built-in IMU
