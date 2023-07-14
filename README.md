@@ -19,7 +19,7 @@
 
 ### Related Paper
 
-our related papers are now available on **arxiv**:  [Robust Real-time LiDAR-inertial Initialization](https://arxiv.org/abs/2202.11006)
+our related papers are now available:  [Robust Real-time LiDAR-inertial Initialization](https://ieeexplore.ieee.org/document/9982225)
 
 If our code is used in your project, please cite our paper following the bibtex below:
 ```
