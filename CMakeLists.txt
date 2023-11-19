@@ -62,14 +62,6 @@ find_package(Ceres REQUIRED)
 
 message(Eigen: ${EIGEN3_INCLUDE_DIR})
 
-include_directories(
-     ../../devel/include
-	${catkin_INCLUDE_DIRS} 
-  ${EIGEN3_INCLUDE_DIR}
-  ${PCL_INCLUDE_DIRS}
-  ${PYTHON_INCLUDE_DIRS}
-  include)
-
 add_message_files(
   FILES
   Pose6D.msg
@@ -86,6 +78,14 @@ catkin_package(
   DEPENDS EIGEN3 PCL
   INCLUDE_DIRS
 )
+
+include_directories(
+     ../../devel/include
+	${catkin_INCLUDE_DIRS} 
+  ${EIGEN3_INCLUDE_DIR}
+  ${PCL_INCLUDE_DIRS}
+  ${PYTHON_INCLUDE_DIRS}
+  include)
 
 add_executable(li_init
         src/laserMapping.cpp
