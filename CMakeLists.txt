@@ -62,6 +62,12 @@ find_package(Ceres REQUIRED)
 
 message(Eigen: ${EIGEN3_INCLUDE_DIR})
 
+add_message_files(
+  FILES
+  Pose6D.msg
+  States.msg
+)
+
 include_directories(
      ../../devel/include
 	${catkin_INCLUDE_DIRS} 
@@ -69,12 +75,6 @@ include_directories(
   ${PCL_INCLUDE_DIRS}
   ${PYTHON_INCLUDE_DIRS}
   include)
-
-add_message_files(
-  FILES
-  Pose6D.msg
-  States.msg
-)
 
 generate_messages(
  DEPENDENCIES
