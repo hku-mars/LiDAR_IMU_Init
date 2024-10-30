@@ -1,6 +1,6 @@
 common:
     lid_topic:  "/hesai/pandar"
-    imu_topic:  "/mavros/imu/data_raw"
+    imu_topic:  "/imu"
 
 preprocess:
     lidar_type: 5                # Hesai PandarXT
@@ -9,7 +9,7 @@ preprocess:
     feature_extract_en: false
 
 initialization:
-    cut_frame_num: 4 # must be positive integer
+    cut_frame_num: 3 # must be positive integer
     orig_odom_freq: 10
     mean_acc_norm: 9.805
     online_refine_time: 15.0
@@ -18,8 +18,8 @@ initialization:
     Trans_LI_cov: [ 0.00001, 0.00001, 0.00000001 ]
 
 mapping:
-    filter_size_surf: 0.05
-    filter_size_map: 0.15
+    filter_size_surf: 0.1
+    filter_size_map: 0.1
     gyr_cov: 20
     acc_cov: 2
     b_acc_cov: 0.0001

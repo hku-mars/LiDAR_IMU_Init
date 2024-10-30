@@ -1,26 +1,28 @@
 common:
-    lid_topic:  "/os_cloud_node/points"
-    imu_topic:  "/mavros/imu/data_raw"
+    lid_topic:  "/ouster/points"
+    imu_topic:  "/imu/data"
+#    lid_topic: "/os_cloud_node/points"
+#    imu_topic: "/mavros/imu/data_raw"
 
 preprocess:
     lidar_type: 3                # Ouster LiDAR
-    scan_line: 128
-    blind: 4
+    scan_line: 32
+    blind: 2
     feature_extract_en: false
 
 initialization:
-    cut_frame_num: 3 # must be positive integer
+    cut_frame_num: 4 # must be positive integer
     orig_odom_freq: 10
     mean_acc_norm: 9.805
     online_refine_time: 15
-    data_accum_length: 300
+    data_accum_length: 700
     Rot_LI_cov: [ 0.00005, 0.00005, 0.00005 ]
     Trans_LI_cov: [ 0.0001, 0.0001, 0.0001 ]
 
 mapping:
     filter_size_surf: 0.05
     filter_size_map: 0.15
-    gyr_cov: 50
+    gyr_cov: 40
     acc_cov: 2
     b_acc_cov: 0.0001
     b_gyr_cov: 0.0001

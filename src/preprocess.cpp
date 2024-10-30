@@ -220,7 +220,8 @@ Preprocess::process_cut_frame_pcl2(const sensor_msgs::PointCloud2::ConstPtr &msg
             added_pt.y = pl_orig.points[i].y;
             added_pt.z = pl_orig.points[i].z;
             added_pt.intensity = pl_orig.points[i].intensity;
-            added_pt.curvature = (pl_orig.points[i].timestamp - msg->header.stamp.toSec()) * 1000;  //s to ms
+//            added_pt.curvature = (pl_orig.points[i].timestamp - msg->header.stamp.toSec()) * 1000;  //s to ms
+            added_pt.curvature = (pl_orig.points[i].timestamp - pl_orig.points[0].timestamp) * 1000;  //s to ms
 
             double dist = added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z;
             if ( dist < blind * blind || isnan(added_pt.x) || isnan(added_pt.y) || isnan(added_pt.z))

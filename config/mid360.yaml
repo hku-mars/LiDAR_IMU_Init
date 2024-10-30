@@ -20,7 +20,7 @@ initialization:
 mapping:
     filter_size_surf: 0.05
     filter_size_map: 0.15
-    gyr_cov: 50
+    gyr_cov: 2
     acc_cov: 2
     b_acc_cov: 0.0001
     b_gyr_cov: 0.0001

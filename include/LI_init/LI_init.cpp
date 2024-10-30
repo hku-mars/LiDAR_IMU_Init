@@ -398,7 +398,6 @@ void LI_Init::solve_Rot_bias_gyro(double &timediff_imu_wrt_lidar) {
         fout_after_rot << setprecision(12) << (Rot_Lidar_wrt_IMU * Lidar_state_group[i].ang_vel + gyro_bias).transpose()
                        << " " << Lidar_state_group[i].timeStamp << endl;
     }
-
 }
 
 void LI_Init::solve_trans_biasacc_grav() {
