@@ -382,7 +382,6 @@ void LI_Init::solve_Rot_bias_gyro(double &timediff_imu_wrt_lidar) {
 
     Eigen::Quaterniond q_LI(R_LI_quat[0], R_LI_quat[1], R_LI_quat[2], R_LI_quat[3]);
     Rot_Lidar_wrt_IMU = q_LI.matrix();
-    V3D euler_angle = RotMtoEuler(q_LI.matrix());
     gyro_bias = V3D(bias_g[0], bias_g[1], bias_g[2]);
 
     time_lag_2 = time_lag2;

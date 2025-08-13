@@ -195,7 +195,7 @@ auto set_pose6d(const double t, const Matrix<T, 3, 1> &a, const Matrix<T, 3, 1> 
         for (int j = 0; j < 3; j++)  rot_kp.rot[i*3+j] = R(i,j);
     }
     // Map<M3D>(rot_kp.rot, 3,3) = R;
-    return move(rot_kp);
+    return rot_kp;
 }
 
 /* comment

@@ -12,7 +12,7 @@ enum Feature{Nor, Poss_Plane, Real_Plane, Edge_Jump, Edge_Plane, Wire, ZeroPoint
 enum Surround{Prev, Next};
 enum E_jump{Nr_nor, Nr_zero, Nr_180, Nr_inf, Nr_blind};
 
-const bool time_list_cut_frame(PointType &x, PointType &y);
+bool time_list_cut_frame(PointType &x, PointType &y);
 
 struct orgtype
 {

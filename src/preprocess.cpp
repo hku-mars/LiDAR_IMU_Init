@@ -3,12 +3,12 @@
 #define RETURN0     0x00
 #define RETURN0AND1 0x10
 
-const bool time_list_cut_frame(PointType &x, PointType &y) {
+bool time_list_cut_frame(PointType &x, PointType &y) {
     return (x.curvature < y.curvature);
 }
 
 Preprocess::Preprocess()
-        : feature_enabled(0), lidar_type(AVIA), blind(1.0), point_filter_num(1) {
+        : lidar_type(AVIA), point_filter_num(1), blind(1.0), feature_enabled(0) {
     inf_bound = 10;
     N_SCANS = 6;
     group_size = 8;

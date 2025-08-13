@@ -13,7 +13,8 @@
                 "ms-python.python",
                 "ms-vscode.cmake-tools",
                 "twxs.cmake",
-                "ms-vscode.hexeditor"
+                "ms-vscode.hexeditor",
+                "llvm-vs-code-extensions.vscode-clangd"
             ],
             "settings": {
                 "terminal.integrated.defaultProfile.linux": "bash"
