@@ -5,12 +5,12 @@
 #include <Eigen/Eigen>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <lidar_imu_init/States.h>
-#include <lidar_imu_init/Pose6D.h>
-#include <sensor_msgs/Imu.h>
-#include <nav_msgs/Odometry.h>
-#include <tf/transform_broadcaster.h>
-#include <eigen_conversions/eigen_msg.h>
+#include <lidar_imu_init/msg/states.hpp>
+#include <lidar_imu_init/msg/pose6_d.hpp>
+#include <sensor_msgs/msg/imu.hpp>
+#include <nav_msgs/msg/odometry.hpp>
+#include <tf2_ros/transform_broadcaster.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <color.h>
 #include <scope_timer.hpp>
 
@@ -33,7 +33,7 @@ using namespace Eigen;
 #define DEBUG_FILE_DIR(name)     (string(string(ROOT_DIR) + "Log/"+ name))
 #define RESULT_FILE_DIR(name)    (string(string(ROOT_DIR) + "result/"+ name))
 
-typedef lidar_imu_init::Pose6D     Pose6D;
+typedef lidar_imu_init::msg::Pose6D     Pose6D;
 typedef pcl::PointXYZINormal PointType;
 typedef pcl::PointXYZRGB     PointTypeRGB;
 typedef pcl::PointCloud<PointType>    PointCloudXYZI;
@@ -62,7 +62,7 @@ struct MeasureGroup     // Lidar data and imu dates for the curent process
     };
     double lidar_beg_time;
     PointCloudXYZI::Ptr lidar;
-    deque<sensor_msgs::Imu::ConstPtr> imu;
+    deque<sensor_msgs::msg::Imu::ConstSharedPtr> imu;
 };
 
 struct StatesGroup
@@ -220,7 +220,7 @@ bool esti_normvector(Matrix<T, 3, 1> &normvec, const PointVector &point, const T
         A(j,2) = point[j].z;
     }
     normvec = A.colPivHouseholderQr().solve(b);
-    
+
     for (int j = 0; j < point_num; j++)
     {
         if (fabs(normvec(0) * point[j].x + normvec(1) * point[j].y + normvec(2) * point[j].z + 1.0f) > threshold)

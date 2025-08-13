@@ -1,4 +1,4 @@
-Header header          # timestamp of the first lidar in a frame
+std_msgs/Header header          # timestamp of the first lidar in a frame
 float64[] rot_end      # the estimated attitude (rotation matrix) at the end lidar point
 float64[] pos_end      # the estimated position at the end lidar point (world frame)
 float64[] vel_end      # the estimated velocity at the end lidar point (world frame)

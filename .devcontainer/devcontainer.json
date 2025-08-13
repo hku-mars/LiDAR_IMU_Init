@@ -1,0 +1,37 @@
+{
+    "name": "LiDAR_IMU_Init ROS2 Development",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "remoteUser": "root",
+    "workspaceFolder": "/workspace",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-vscode.cpptools-extension-pack",
+                "ms-python.python",
+                "ms-vscode.cmake-tools",
+                "twxs.cmake",
+                "ms-vscode.hexeditor"
+            ],
+            "settings": {
+                "terminal.integrated.defaultProfile.linux": "bash"
+            }
+        }
+    },
+    "postCreateCommand": "cd /workspace && source /opt/ros/jazzy/setup.bash && rosdep update",
+    "forwardPorts": [],
+    "mounts": [
+        "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind",
+        "source=${localEnv:HOME}/.ssh,target=/root/.ssh,type=bind,readonly"
+    ],
+    "containerEnv": {
+        "DISPLAY": "${localEnv:DISPLAY}",
+        "ROS_DISTRO": "jazzy"
+    },
+    "runArgs": [
+        "--network=host",
+        "--privileged"
+    ]
+}

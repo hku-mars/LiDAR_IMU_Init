@@ -51,13 +51,13 @@ void LI_Init::fout_before_filter() {
     }
 }
 
-void LI_Init::push_ALL_IMU_CalibState(const sensor_msgs::Imu::ConstPtr &msg, const double &mean_acc_norm) {
+void LI_Init::push_ALL_IMU_CalibState(const sensor_msgs::msg::Imu::ConstSharedPtr &msg, const double &mean_acc_norm) {
     CalibState IMUstate;
     IMUstate.ang_vel = V3D(msg->angular_velocity.x, msg->angular_velocity.y, msg->angular_velocity.z);
     IMUstate.linear_acc =
             V3D(msg->linear_acceleration.x, msg->linear_acceleration.y, msg->linear_acceleration.z) / mean_acc_norm *
             G_m_s2;
-    IMUstate.timeStamp = msg->header.stamp.toSec();
+    IMUstate.timeStamp = rclcpp::Time(msg->header.stamp).seconds();
     IMU_state_group_ALL.push_back(IMUstate);
 }
 
@@ -321,7 +321,7 @@ void LI_Init::solve_Rotation_only() {
     R_LI_quat[2] = 0;
     R_LI_quat[3] = 0;
 
-    ceres::LocalParameterization *quatParam = new ceres::QuaternionParameterization();
+    ceres::Manifold *quatParam = new ceres::QuaternionManifold();
     ceres::Problem problem_rot;
     problem_rot.AddParameterBlock(R_LI_quat, 4, quatParam);
 
@@ -357,7 +357,7 @@ void LI_Init::solve_Rot_bias_gyro(double &timediff_imu_wrt_lidar) {
 
     double time_lag2 = 0; //Second time lag (IMU wtr Lidar)
 
-    ceres::LocalParameterization *quatParam = new ceres::QuaternionParameterization();
+    ceres::Manifold *quatParam = new ceres::QuaternionManifold();
     ceres::Problem problem_ang_vel;
 
     problem_ang_vel.AddParameterBlock(R_LI_quat, 4, quatParam);
@@ -420,7 +420,7 @@ void LI_Init::solve_trans_biasacc_grav() {
     Trans_IL[1] = 0.0;
     Trans_IL[2] = 0.0;
 
-    ceres::LocalParameterization *quatParam = new ceres::QuaternionParameterization();
+    ceres::Manifold *quatParam = new ceres::QuaternionManifold();
     ceres::Problem problem_acc;
 
     problem_acc.AddParameterBlock(R_GL0_quat, 4, quatParam);
@@ -667,6 +667,7 @@ void LI_Init::plot_result() {
         }
     }
 
+#ifdef USE_MATPLOTLIB
     plt::figure(1);
     plt::subplot(2, 3, 1);
     plt::named_plot("IMU omg x", IMU_omg[0]);
@@ -713,4 +714,5 @@ void LI_Init::plot_result() {
     plt::show();
     plt::pause(0);
     plt::close();
+#endif
 }
