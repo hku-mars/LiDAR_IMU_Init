@@ -260,7 +260,7 @@ Preprocess::process_cut_frame_pcl2(const sensor_msgs::PointCloud2::ConstPtr &msg
             added_pt.y = pl_orig.points[i].y;
             added_pt.z = pl_orig.points[i].z;
             added_pt.intensity = pl_orig.points[i].intensity;
-            added_pt.curvature = (pl_orig.points[i].timestamp - msg->header.stamp.toSec() + 0.1)* 1000.0;  //ms
+            added_pt.curvature = (pl_orig.points[i].timestamp - msg->header.stamp.toSec())* 1000.0;  //ms, if using the first point as the timestamp for whole scan (default, if using last: +0.1)
 
 
             double dist = added_pt.x * added_pt.x + added_pt.y * added_pt.y + added_pt.z * added_pt.z;
