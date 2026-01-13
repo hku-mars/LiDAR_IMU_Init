@@ -131,7 +131,7 @@ After initialization and refinement finished, the result would be written into `
 
 ## 4. Rosbag Example
 
-Download our test bags here: [Lidar IMU Initialization Datasets](https://connecthkuhk-my.sharepoint.com/:f:/g/personal/zhufc_connect_hku_hk/EgdJ_F763sVOnkUNBRv-op8BmNL7eZrxETu2zSEAoiRX4A?e=cbNiJI).
+Download our test bags here: [Lidar IMU Initialization Datasets](https://drive.google.com/drive/folders/1PVbJ7Tj5FOFE0pkVJ_k3_ata-5j9UwR3?usp=sharing).
 
 Use `rosbag info xxx.bag` to get the correct topic name.
 
